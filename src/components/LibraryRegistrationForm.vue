@@ -135,61 +135,32 @@
 
         </form>
 
-        <!-- Submitted User Cards -->
-        <div
-          class="row mt-5"
-          v-if="submittedCards.length"
-        >
-          <div class="d-flex flex-wrap justify-content-start">
-
-            <div
-              v-for="(card, index) in submittedCards"
-              :key="index"
-              class="card m-2"
-              style="width: 18rem;"
-            >
-
-              <div class="card-header">
-                User Information
-              </div>
-
-              <ul class="list-group list-group-flush">
-
-                <li class="list-group-item">
-                  Username: {{ card.username }}
-                </li>
-
-                <li class="list-group-item">
-                  Password: {{ card.password }}
-                </li>
-
-                <li class="list-group-item">
-                  Australian Resident:
-                  {{ card.isAustralian ? 'Yes' : 'No' }}
-                </li>
-
-                <li class="list-group-item">
-                  Gender: {{ card.gender }}
-                </li>
-
-                <li class="list-group-item">
-                  Reason: {{ card.reason }}
-                </li>
-
-              </ul>
-
-            </div>
-
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
+  <div class="mt-5" v-if="submittedCards.length > 0">
+  <h3 class="text-center mb-3">Submitted User Information</h3>
+
+  <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
+    <Column field="username" header="Username"></Column>
+    <Column field="password" header="Password"></Column>
+
+    <Column header="Australian Resident">
+      <template #body="slotProps">
+        {{ slotProps.data.isAustralian ? 'Yes' : 'No' }}
+      </template>
+    </Column>
+
+    <Column field="gender" header="Gender"></Column>
+    <Column field="reason" header="Reason"></Column>
+  </DataTable>
+</div>
 </template>
 
 <script setup>
 import { ref } from 'vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 
 const formData = ref({
   username: '',
