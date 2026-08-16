@@ -210,8 +210,12 @@ const errors = ref({
 })
 
 const validateName = (blur) => {
-  if (formData.value.username.length < 3) {
+  const username = formData.value.username.trim()
+
+  if (username.length < 3) {
     if (blur) errors.value.username = "Name must be at least 3 characters"
+  } else if (!/^[A-Za-z\s]+$/.test(username)) {
+    if (blur) errors.value.username = "Name can only contain letters and spaces"
   } else {
     errors.value.username = null
   }
@@ -225,6 +229,7 @@ const validatePassword = (blur) => {
   const hasLowercase = /[a-z]/.test(password)
   const hasNumber = /\d/.test(password)
   const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+  const hasSpace = /\s/.test(password)
 
   if (password.length < minLength) {
     if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`
@@ -236,6 +241,8 @@ const validatePassword = (blur) => {
     if (blur) errors.value.password = "Password must contain at least one number."
   } else if (!hasSpecialChar) {
     if (blur) errors.value.password = "Password must contain at least one special character."
+  } else if (hasSpace) {
+    if (blur) errors.value.password = "Password must not contain spaces."
   } else {
     errors.value.password = null
   }
