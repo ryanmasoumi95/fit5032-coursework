@@ -1,6 +1,9 @@
+<script setup>
+import AppHeader from './components/AppHeader.vue'
+</script>
 <template>
+  <AppHeader />
   <main>
-    <h1>Circular Melbourne</h1>
     <p>Basic Application Development: Version 1</p>
   </main>
 </template>
