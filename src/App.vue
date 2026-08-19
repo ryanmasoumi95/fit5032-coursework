@@ -1,7 +1,7 @@
 <script setup>
-import LibraryRegistrationForm from './components/LibraryRegistrationForm.vue'
+import HomeView from './views/HomeView.vue'
 </script>
 
 <template>
-  <LibraryRegistrationForm />
+  <HomeView />
 </template>
