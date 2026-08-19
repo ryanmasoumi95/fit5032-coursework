@@ -1,7 +1,8 @@
 <script setup>
-import HomeView from './views/HomeView.vue'
+import BHeader from './components/BHeader.vue'
 </script>
 
 <template>
-  <HomeView />
+  <BHeader />
+  <router-view></router-view>
 </template>
