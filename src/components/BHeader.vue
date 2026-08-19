@@ -23,7 +23,48 @@
           </router-link>
         </li>
 
+        <li
+          v-if="!isAuthenticated"
+          class="nav-item"
+        >
+          <router-link
+            to="/login"
+            class="nav-link"
+            active-class="active"
+          >
+            Login
+          </router-link>
+        </li>
+
+        <li
+          v-else
+          class="nav-item"
+        >
+          <button
+            class="nav-link"
+            type="button"
+            @click="handleLogout"
+          >
+            Logout
+          </button>
+        </li>
+
       </ul>
     </header>
   </div>
 </template>
+
+<script setup>
+import { useRouter } from 'vue-router'
+import {
+  isAuthenticated,
+  logout
+} from '../auth'
+
+const router = useRouter()
+
+const handleLogout = () => {
+  logout()
+  router.push('/login')
+}
+</script>
