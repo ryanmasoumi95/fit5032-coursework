@@ -6,19 +6,26 @@ import ReportForm from './components/ReportForm.vue'
 import services from './data/services.json'
 
 const searchTerm = ref('')
+const selectedCategory = ref('All')
+
+const categories = ['All', ...new Set(services.map((service) => service.category))]
 
 const filteredServices = computed(() => {
   const term = searchTerm.value.toLowerCase().trim()
 
-  if (!term) {
-    return services
-  }
+  return services.filter((service) => {
+    const matchesSearch =
+      !term ||
+      service.name.toLowerCase().includes(term) ||
+      service.suburb.toLowerCase().includes(term) ||
+      service.category.toLowerCase().includes(term)
 
-  return services.filter((service) =>
-    service.name.toLowerCase().includes(term) ||
-    service.suburb.toLowerCase().includes(term) ||
-    service.category.toLowerCase().includes(term)
-  )
+    const matchesCategory =
+      selectedCategory.value === 'All' ||
+      service.category === selectedCategory.value
+
+    return matchesSearch && matchesCategory
+  })
 })
 </script>
 
@@ -39,6 +46,21 @@ const filteredServices = computed(() => {
         type="search"
         placeholder="Search by name, suburb or category"
       >
+
+      <label for="category-filter">Filter by category</label>
+
+      <select
+        id="category-filter"
+        v-model="selectedCategory"
+      >
+        <option
+          v-for="category in categories"
+          :key="category"
+          :value="category"
+        >
+          {{ category }}
+        </option>
+      </select>
 
       <p>{{ filteredServices.length }} service(s) found</p>
 
