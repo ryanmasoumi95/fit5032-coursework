@@ -252,3 +252,60 @@ button {
     max-width: 100%;
   }
 }
+
+.auth-panel {
+  max-width: 600px;
+  padding: 24px;
+  background-color: #ffffff;
+  border: 1px solid #d9e6df;
+  border-radius: 12px;
+}
+
+.auth-panel h2 {
+  margin-top: 0;
+}
+
+.auth-mode-buttons {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.auth-mode-buttons button {
+  background-color: #d9e6df;
+  color: #173f32;
+}
+
+.auth-mode-buttons button.active {
+  background-color: #1f6f50;
+  color: #ffffff;
+}
+
+.auth-form {
+  max-width: 100%;
+}
+
+.auth-form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.auth-form button[type='submit'] {
+  margin-top: 4px;
+}
+
+@media (max-width: 575px) {
+  .auth-panel {
+    padding: 20px;
+  }
+
+  .auth-mode-buttons {
+    flex-direction: column;
+  }
+
+  .auth-mode-buttons button {
+    width: 100%;
+  }
+}
