@@ -25,10 +25,10 @@ const filteredServices = computed(() => {
 <template>
   <AppHeader />
 
-  <main>
+  <main id="home">
     <p>Basic Application Development: Version 1</p>
 
-    <section>
+    <section id="services">
       <h2>Find a Service</h2>
 
       <label for="service-search">Search services</label>
@@ -55,6 +55,6 @@ const filteredServices = computed(() => {
       </div>
     </section>
 
-    <ReportForm />
+    <ReportForm id="report" />
   </main>
 </template>

@@ -10,9 +10,9 @@
     </div>
 
     <nav class="main-nav" aria-label="Main navigation">
-      <a href="#">Home</a>
-      <a href="#">Find a Service</a>
-      <a href="#">Report Information</a>
+      <a href="#home">Home</a>
+      <a href="#services">Find a Service</a>
+      <a href="#report">Report Information</a>
     </nav>
   </header>
 </template>
