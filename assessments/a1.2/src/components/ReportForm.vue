@@ -7,9 +7,11 @@ const description = ref('')
 const email = ref('')
 
 const errors = ref({})
+const successMessage = ref('')
 
 function validateForm() {
   errors.value = {}
+  successMessage.value = ''
 
   if (!serviceName.value.trim()) {
     errors.value.serviceName = 'Service name is required.'
@@ -35,9 +37,16 @@ function validateForm() {
 }
 
 function submitForm() {
-  if (validateForm()) {
-    alert('Report submitted successfully.')
+  if (!validateForm()) {
+    return
   }
+
+  successMessage.value = 'Report submitted successfully.'
+
+  serviceName.value = ''
+  issueType.value = ''
+  description.value = ''
+  email.value = ''
 }
 </script>
 
@@ -90,6 +99,10 @@ function submitForm() {
       </div>
 
       <button type="submit">Submit report</button>
+
+      <p v-if="successMessage">
+        {{ successMessage }}
+      </p>
     </form>
   </section>
 </template>
