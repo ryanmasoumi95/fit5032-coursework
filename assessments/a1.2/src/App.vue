@@ -2,6 +2,7 @@
 import { computed, ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import ServiceCard from './components/ServiceCard.vue'
+import ReportForm from './components/ReportForm.vue'
 import services from './data/services.json'
 
 const searchTerm = ref('')
@@ -46,5 +47,7 @@ const filteredServices = computed(() => {
         :service="service"
       />
     </section>
+
+    <ReportForm />
   </main>
 </template>
