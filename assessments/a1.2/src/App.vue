@@ -42,6 +42,10 @@ const filteredServices = computed(() => {
 
       <p>{{ filteredServices.length }} service(s) found</p>
 
+      <p v-if="filteredServices.length === 0">
+        No services match your search. Try another suburb, category or service name.
+      </p>
+
       <div class="service-grid">
         <ServiceCard
           v-for="service in filteredServices"
