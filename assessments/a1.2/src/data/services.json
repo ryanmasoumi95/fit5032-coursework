@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Dandenong E-Waste Hub",
+    "suburb": "Dandenong",
+    "category": "E-waste",
+    "description": "Drop-off point for household e-waste and small electrical items."
+  },
+  {
+    "id": 2,
+    "name": "Community Repair Centre",
+    "suburb": "Footscray",
+    "category": "Repair",
+    "description": "Community repair support for common household items and small furniture."
+  },
+  {
+    "id": 3,
+    "name": "Richmond Textile Hub",
+    "suburb": "Richmond",
+    "category": "Clothing",
+    "description": "Collection point for wearable and end-of-life clothing."
+  }
+]
