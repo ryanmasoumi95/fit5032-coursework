@@ -231,7 +231,7 @@ button {
   }
 }
 
-@media (max-width: 575px) {
+@media (max-width: 767px) {
   main,
   .home-intro,
   .service-grid,
