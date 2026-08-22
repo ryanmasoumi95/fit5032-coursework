@@ -21,3 +21,53 @@ select,
 textarea {
   font: inherit;
 }
+
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 32px;
+  background-color: #ffffff;
+  border-bottom: 1px solid #d9e6df;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  background-color: #1f6f50;
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.brand-name {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.brand-tagline {
+  margin: 4px 0 0;
+  font-size: 0.85rem;
+  color: #5d756b;
+}
+
+.main-nav {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.main-nav a {
+  color: #173f32;
+  text-decoration: none;
+  font-weight: 600;
+}
