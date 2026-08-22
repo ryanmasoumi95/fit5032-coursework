@@ -57,16 +57,24 @@ function submitForm() {
     <form @submit.prevent="submitForm" novalidate>
       <div>
         <label for="service-name">Service name</label>
+
         <input
           id="service-name"
           v-model="serviceName"
           type="text"
         >
-        <p v-if="errors.serviceName">{{ errors.serviceName }}</p>
+
+        <p
+          v-if="errors.serviceName"
+          class="form-error"
+        >
+          {{ errors.serviceName }}
+        </p>
       </div>
 
       <div>
         <label for="issue-type">Issue type</label>
+
         <select
           id="issue-type"
           v-model="issueType"
@@ -76,31 +84,54 @@ function submitForm() {
           <option value="hours">Incorrect opening hours</option>
           <option value="service">Service information</option>
         </select>
-        <p v-if="errors.issueType">{{ errors.issueType }}</p>
+
+        <p
+          v-if="errors.issueType"
+          class="form-error"
+        >
+          {{ errors.issueType }}
+        </p>
       </div>
 
       <div>
         <label for="description">Description</label>
+
         <textarea
           id="description"
           v-model="description"
         ></textarea>
-        <p v-if="errors.description">{{ errors.description }}</p>
+
+        <p
+          v-if="errors.description"
+          class="form-error"
+        >
+          {{ errors.description }}
+        </p>
       </div>
 
       <div>
         <label for="email">Email</label>
+
         <input
           id="email"
           v-model="email"
           type="email"
         >
-        <p v-if="errors.email">{{ errors.email }}</p>
+
+        <p
+          v-if="errors.email"
+          class="form-error"
+        >
+          {{ errors.email }}
+        </p>
       </div>
 
       <button type="submit">Submit report</button>
 
-      <p v-if="successMessage">
+      <p
+        v-if="successMessage"
+        class="form-success"
+      >
         {{ successMessage }}
       </p>
     </form>
