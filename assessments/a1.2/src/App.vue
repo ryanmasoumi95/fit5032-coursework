@@ -1,11 +1,16 @@
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import AppHeader from './components/AppHeader.vue'
 import ServiceCard from './components/ServiceCard.vue'
 import ReportForm from './components/ReportForm.vue'
 import services from './data/services.json'
 
-const searchTerm = ref('')
+const searchTerm = ref(localStorage.getItem('serviceSearch') || '')
+
+watch(searchTerm, (newSearchTerm) => {
+  localStorage.setItem('serviceSearch', newSearchTerm)
+})
+
 const selectedCategory = ref('All')
 
 const categories = ['All', ...new Set(services.map((service) => service.category))]
@@ -30,9 +35,9 @@ const filteredServices = computed(() => {
 </script>
 
 <template>
-  <AppHeader />
+  <AppHeader id="home" />
 
-  <main id="home">
+  <main>
     <p>Basic Application Development: Version 1</p>
 
     <section id="services">
