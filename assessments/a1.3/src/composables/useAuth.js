@@ -6,6 +6,15 @@ const authError = ref('')
 const USERS_KEY = 'circularMelbourneUsers'
 const CURRENT_USER_KEY = 'circularMelbourneCurrentUser'
 
+const DEMO_ADMIN = {
+  id: 'admin-001',
+  name: 'Circular Melbourne Admin',
+  email: 'admin@circularmelbourne.org.au',
+  passwordHash:
+    '3eb3fe66b31e3b4d10fa70b5cad49c7112294af6ae4e476a1c405155d45aa121',
+  role: 'admin'
+}
+
 function getStoredUsers() {
   const savedUsers = localStorage.getItem(USERS_KEY)
 
@@ -24,6 +33,19 @@ function getStoredUsers() {
 
 function saveStoredUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
+}
+
+function ensureDemoAdmin() {
+  const users = getStoredUsers()
+
+  const adminExists = users.some(
+    (user) => user.email.toLowerCase() === DEMO_ADMIN.email
+  )
+
+  if (!adminExists) {
+    users.push(DEMO_ADMIN)
+    saveStoredUsers(users)
+  }
 }
 
 async function hashPassword(password) {
@@ -155,6 +177,7 @@ const isAdmin = computed(
   () => currentUser.value?.role === 'admin'
 )
 
+ensureDemoAdmin()
 restoreSession()
 
 export function useAuth() {
