@@ -230,3 +230,25 @@ button {
     font-size: 1.6rem;
   }
 }
+
+@media (max-width: 575px) {
+  main,
+  .home-intro,
+  .service-grid,
+  .service-card,
+  form {
+    min-width: 0;
+  }
+
+  .home-intro h2,
+  .service-card h2,
+  .service-card p {
+    overflow-wrap: anywhere;
+  }
+
+  input,
+  select,
+  textarea {
+    max-width: 100%;
+  }
+}
