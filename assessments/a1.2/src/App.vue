@@ -32,6 +32,7 @@ const filteredServices = computed(() => {
       <h2>Find a Service</h2>
 
       <label for="service-search">Search services</label>
+
       <input
         id="service-search"
         v-model="searchTerm"
@@ -41,11 +42,13 @@ const filteredServices = computed(() => {
 
       <p>{{ filteredServices.length }} service(s) found</p>
 
-      <ServiceCard
-        v-for="service in filteredServices"
-        :key="service.id"
-        :service="service"
-      />
+      <div class="service-grid">
+        <ServiceCard
+          v-for="service in filteredServices"
+          :key="service.id"
+          :service="service"
+        />
+      </div>
     </section>
 
     <ReportForm />

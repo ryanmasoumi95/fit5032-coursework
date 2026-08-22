@@ -86,3 +86,93 @@ textarea {
     gap: 12px;
   }
 }
+
+main {
+  width: min(1100px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 32px 0 48px;
+}
+
+main > p {
+  color: #5d756b;
+}
+
+main section {
+  margin-top: 32px;
+}
+
+.service-card {
+  margin: 16px 0;
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #d9e6df;
+  border-radius: 12px;
+}
+
+form {
+  max-width: 600px;
+}
+
+form > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #a9bbb2;
+  border-radius: 6px;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+button {
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 6px;
+  background-color: #1f6f50;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+@media (max-width: 575px) {
+  main {
+    width: min(100% - 32px, 1100px);
+    padding-top: 24px;
+  }
+
+  .service-card {
+    padding: 16px;
+  }
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+}
+
+.service-grid .service-card {
+  margin: 0;
+}
+
+@media (min-width: 576px) {
+  .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .service-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
