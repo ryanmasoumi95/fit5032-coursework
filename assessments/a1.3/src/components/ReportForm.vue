@@ -1,5 +1,9 @@
 <script setup>
 import { ref } from 'vue'
+import {
+  cleanPlainText,
+  containsUnsafeMarkup
+} from '../utils/security'
 
 const serviceName = ref('')
 const issueType = ref('')
@@ -9,31 +13,73 @@ const email = ref('')
 const errors = ref({})
 const successMessage = ref('')
 
+const allowedIssueTypes = [
+  'address',
+  'hours',
+  'service'
+]
+
 function validateForm() {
   errors.value = {}
   successMessage.value = ''
 
-  if (!serviceName.value.trim()) {
+  const cleanServiceName = cleanPlainText(
+    serviceName.value,
+    80
+  )
+
+  const cleanDescription = cleanPlainText(
+    description.value,
+    500
+  )
+
+  const cleanEmail = cleanPlainText(
+    email.value,
+    120
+  )
+
+  if (!cleanServiceName) {
     errors.value.serviceName = 'Service name is required.'
+  } else if (containsUnsafeMarkup(serviceName.value)) {
+    errors.value.serviceName =
+      'HTML or script markup is not allowed.'
   }
 
-  if (!issueType.value) {
-    errors.value.issueType = 'Please select an issue type.'
+  if (!allowedIssueTypes.includes(issueType.value)) {
+    errors.value.issueType =
+      'Please select a valid issue type.'
   }
 
-  if (description.value.trim().length < 20) {
-    errors.value.description = 'Description must be at least 20 characters.'
+  if (cleanDescription.length < 20) {
+    errors.value.description =
+      'Description must be at least 20 characters.'
+  } else if (containsUnsafeMarkup(description.value)) {
+    errors.value.description =
+      'HTML or script markup is not allowed.'
   }
 
-  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailPattern =
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-  if (!email.value.trim()) {
+  if (!cleanEmail) {
     errors.value.email = 'Email is required.'
-  } else if (!emailPattern.test(email.value)) {
-    errors.value.email = 'Please enter a valid email address.'
+  } else if (
+    containsUnsafeMarkup(email.value) ||
+    !emailPattern.test(cleanEmail)
+  ) {
+    errors.value.email =
+      'Please enter a valid email address.'
   }
 
-  return Object.keys(errors.value).length === 0
+  if (Object.keys(errors.value).length > 0) {
+    return false
+  }
+
+  serviceName.value = cleanServiceName
+  description.value = cleanDescription
+  email.value = cleanEmail.toLowerCase()
+
+  return true
 }
 
 function submitForm() {
@@ -41,7 +87,8 @@ function submitForm() {
     return
   }
 
-  successMessage.value = 'Report submitted successfully.'
+  successMessage.value =
+    'Report submitted successfully.'
 
   serviceName.value = ''
   issueType.value = ''
@@ -51,17 +98,24 @@ function submitForm() {
 </script>
 
 <template>
-  <section>
+  <section id="report">
     <h2>Report Incorrect Information</h2>
 
-    <form @submit.prevent="submitForm" novalidate>
+    <form
+      @submit.prevent="submitForm"
+      novalidate
+    >
       <div>
-        <label for="service-name">Service name</label>
+        <label for="service-name">
+          Service name
+        </label>
 
         <input
           id="service-name"
           v-model="serviceName"
           type="text"
+          maxlength="80"
+          autocomplete="off"
         >
 
         <p
@@ -73,16 +127,29 @@ function submitForm() {
       </div>
 
       <div>
-        <label for="issue-type">Issue type</label>
+        <label for="issue-type">
+          Issue type
+        </label>
 
         <select
           id="issue-type"
           v-model="issueType"
         >
-          <option value="">Select an issue</option>
-          <option value="address">Incorrect address</option>
-          <option value="hours">Incorrect opening hours</option>
-          <option value="service">Service information</option>
+          <option value="">
+            Select an issue
+          </option>
+
+          <option value="address">
+            Incorrect address
+          </option>
+
+          <option value="hours">
+            Incorrect opening hours
+          </option>
+
+          <option value="service">
+            Service information
+          </option>
         </select>
 
         <p
@@ -94,11 +161,14 @@ function submitForm() {
       </div>
 
       <div>
-        <label for="description">Description</label>
+        <label for="description">
+          Description
+        </label>
 
         <textarea
           id="description"
           v-model="description"
+          maxlength="500"
         ></textarea>
 
         <p
@@ -110,12 +180,16 @@ function submitForm() {
       </div>
 
       <div>
-        <label for="email">Email</label>
+        <label for="email">
+          Email
+        </label>
 
         <input
           id="email"
           v-model="email"
           type="email"
+          maxlength="120"
+          autocomplete="email"
         >
 
         <p
@@ -126,7 +200,9 @@ function submitForm() {
         </p>
       </div>
 
-      <button type="submit">Submit report</button>
+      <button type="submit">
+        Submit report
+      </button>
 
       <p
         v-if="successMessage"
