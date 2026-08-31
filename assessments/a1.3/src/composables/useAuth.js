@@ -35,6 +35,7 @@ function saveStoredUsers(users) {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
 }
 
+// Seed one admin account so role-based access can be demonstrated.
 function ensureDemoAdmin() {
   const users = getStoredUsers()
 
@@ -48,6 +49,7 @@ function ensureDemoAdmin() {
   }
 }
 
+// Hash passwords before storing them in this client-side prototype.
 async function hashPassword(password) {
   const encodedPassword = new TextEncoder().encode(password)
 
@@ -61,6 +63,7 @@ async function hashPassword(password) {
     .join('')
 }
 
+// Store only the active user session without including the password hash.
 function createSessionUser(user) {
   return {
     id: user.id,
@@ -95,6 +98,7 @@ function restoreSession() {
   }
 }
 
+// Register multiple users while preventing duplicate email accounts.
 async function register(name, email, password) {
   authError.value = ''
 
@@ -130,6 +134,7 @@ async function register(name, email, password) {
   return true
 }
 
+// Authenticate by comparing the submitted password hash with the stored hash.
 async function login(email, password) {
   authError.value = ''
 

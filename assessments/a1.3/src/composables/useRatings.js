@@ -36,6 +36,7 @@ function getServiceRatings(serviceId) {
   )
 }
 
+// Calculate the aggregated average rating for this service across all users.
 function getAverageRating(serviceId) {
   const serviceRatings = getServiceRatings(serviceId)
 
@@ -67,6 +68,7 @@ function getUserRating(serviceId, userId) {
   return existingRating?.rating ?? 0
 }
 
+// Keep one rating per user per service and update an existing rating instead of duplicating it.
 function submitRating(serviceId, userId, ratingValue) {
   const numericRating = Number(ratingValue)
 

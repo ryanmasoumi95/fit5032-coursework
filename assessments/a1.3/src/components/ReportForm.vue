@@ -13,12 +13,14 @@ const email = ref('')
 const errors = ref({})
 const successMessage = ref('')
 
+// Accept only known issue types instead of trusting arbitrary client input.
 const allowedIssueTypes = [
   'address',
   'hours',
   'service'
 ]
 
+// Clean and validate user input before accepting the report.
 function validateForm() {
   errors.value = {}
   successMessage.value = ''

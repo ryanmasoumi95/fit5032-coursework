@@ -54,6 +54,7 @@ async function goToSection(sectionId) {
         Report Information
       </a>
 
+      <!-- Only administrators can see the dashboard navigation link. -->
       <RouterLink
         v-if="isAdmin"
         :to="{ name: 'admin' }"

@@ -9,6 +9,8 @@ const routes = [
     name: 'home',
     component: HomeView
   },
+
+  // Mark this route as admin-only so access can be enforced by the router guard.
   {
     path: '/admin',
     name: 'admin',
@@ -24,6 +26,7 @@ const router = createRouter({
   routes
 })
 
+// Redirect non-admin users away from routes that require the admin role.
 router.beforeEach((to) => {
   const { isAdmin } = useAuth()
 
