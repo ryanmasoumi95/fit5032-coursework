@@ -1,18 +1,12 @@
-:root {
-  font-family: Arial, Helvetica, sans-serif;
-  color: #173f32;
-  background-color: #f7faf8;
-}
-
 * {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
-  background-color: #f7faf8;
+  font-family: Arial, sans-serif;
   color: #173f32;
+  background: #f7faf8;
 }
 
 button,
@@ -22,30 +16,32 @@ textarea {
   font: inherit;
 }
 
-.site-header {
+.site-header,
+.brand,
+.main-nav,
+.rating-summary,
+.auth-mode-buttons {
   display: flex;
   align-items: center;
+}
+
+.site-header {
   justify-content: space-between;
   gap: 24px;
   padding: 16px 32px;
-  background-color: #ffffff;
+  background: white;
   border-bottom: 1px solid #d9e6df;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
   gap: 12px;
 }
 
 .brand-mark {
-  display: grid;
-  place-items: center;
-  width: 42px;
-  height: 42px;
+  padding: 12px 10px;
   border-radius: 12px;
-  background-color: #1f6f50;
-  color: #ffffff;
+  background: #1f6f50;
+  color: white;
   font-weight: 700;
 }
 
@@ -57,66 +53,92 @@ textarea {
 .brand-tagline {
   margin: 4px 0 0;
   font-size: 0.85rem;
+}
+
+.brand-tagline,
+.rating-summary span,
+.rating-login-message {
   color: #5d756b;
 }
 
 .main-nav {
-  display: flex;
-  align-items: center;
   gap: 24px;
 }
 
 .main-nav a {
-  color: #173f32;
+  color: inherit;
   text-decoration: none;
   font-weight: 600;
 }
 
-@media (max-width: 767px) {
-  .site-header {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 16px 20px;
-  }
-
-  .main-nav {
-    width: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-}
-
 main {
   width: min(1100px, calc(100% - 40px));
-  margin: 0 auto;
+  margin: auto;
   padding: 32px 0 48px;
-}
-
-main > p {
-  color: #5d756b;
 }
 
 main section {
   margin-top: 32px;
 }
 
-.service-card {
-  margin: 16px 0;
+.home-intro {
+  padding: 32px;
+  background: #eaf4ef;
+  border-radius: 12px;
+}
+
+.home-intro > strong,
+.form-success {
+  color: #1f6f50;
+}
+
+.home-intro h2 {
+  margin: 0 0 12px;
+  font-size: 2rem;
+}
+
+button {
+  width: fit-content;
+  padding: 10px 18px;
+  border: 0;
+  border-radius: 6px;
+  background: #1f6f50;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.service-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.service-card,
+.auth-panel {
   padding: 20px;
-  background-color: #ffffff;
+  background: white;
   border: 1px solid #d9e6df;
   border-radius: 12px;
 }
 
-form {
+form,
+.auth-panel {
   max-width: 600px;
 }
 
+form > div,
+.rating-form {
+  display: grid;
+  gap: 8px;
+}
+
 form > div {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
   margin-bottom: 16px;
 }
 
@@ -131,183 +153,26 @@ textarea {
 
 textarea {
   min-height: 120px;
-  resize: vertical;
-}
-
-button {
-  padding: 10px 18px;
-  border: 0;
-  border-radius: 6px;
-  background-color: #1f6f50;
-  color: #ffffff;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-@media (max-width: 575px) {
-  main {
-    width: min(100% - 32px, 1100px);
-    padding-top: 24px;
-  }
-
-  .service-card {
-    padding: 16px;
-  }
-}
-
-.service-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-.service-grid .service-card {
-  margin: 0;
-}
-
-@media (min-width: 576px) {
-  .service-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (min-width: 992px) {
-  .service-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
 }
 
 .form-error {
   margin: 0;
   color: #b42318;
-  font-size: 0.9rem;
-}
-
-.form-success {
-  margin-top: 12px;
-  color: #1f6f50;
-  font-weight: 600;
-}
-
-.home-intro {
-  padding: 32px;
-  background-color: #eaf4ef;
-  border-radius: 12px;
-}
-
-.home-intro .eyebrow {
-  margin: 0 0 8px;
-  color: #1f6f50;
-  font-weight: 700;
-}
-
-.home-intro h2 {
-  margin: 0 0 12px;
-  font-size: 2rem;
-}
-
-.home-intro p {
-  max-width: 700px;
-}
-
-.home-intro a {
-  display: inline-block;
-  margin-top: 8px;
-  padding: 10px 16px;
-  border-radius: 6px;
-  background-color: #1f6f50;
-  color: #ffffff;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-@media (max-width: 575px) {
-  .home-intro {
-    padding: 24px 20px;
-  }
-
-  .home-intro h2 {
-    font-size: 1.6rem;
-  }
-}
-
-@media (max-width: 767px) {
-  main,
-  .home-intro,
-  .service-grid,
-  .service-card,
-  form {
-    min-width: 0;
-  }
-
-  .home-intro h2,
-  .service-card h2,
-  .service-card p {
-    overflow-wrap: anywhere;
-  }
-
-  input,
-  select,
-  textarea {
-    max-width: 100%;
-  }
-}
-
-.auth-panel {
-  max-width: 600px;
-  padding: 24px;
-  background-color: #ffffff;
-  border: 1px solid #d9e6df;
-  border-radius: 12px;
-}
-
-.auth-panel h2 {
-  margin-top: 0;
 }
 
 .auth-mode-buttons {
-  display: flex;
   gap: 10px;
   margin-bottom: 20px;
 }
 
 .auth-mode-buttons button {
-  background-color: #d9e6df;
+  background: #d9e6df;
   color: #173f32;
 }
 
-.auth-mode-buttons button.active {
-  background-color: #1f6f50;
-  color: #ffffff;
-}
-
-.auth-form {
-  max-width: 100%;
-}
-
-.auth-form > div {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  margin-bottom: 16px;
-}
-
-.auth-form button[type='submit'] {
-  margin-top: 4px;
-}
-
-@media (max-width: 575px) {
-  .auth-panel {
-    padding: 20px;
-  }
-
-  .auth-mode-buttons {
-    flex-direction: column;
-  }
-
-  .auth-mode-buttons button {
-    width: 100%;
-  }
+.auth-mode-buttons .active {
+  background: #1f6f50;
+  color: white;
 }
 
 .rating-control {
@@ -317,38 +182,17 @@ button {
 }
 
 .rating-summary {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.rating-summary span {
-  color: #5d756b;
-  font-size: 0.9rem;
-}
-
-.rating-form {
-  display: flex;
-  flex-direction: column;
   gap: 8px;
 }
 
-.rating-form select {
-  width: 100%;
-}
+@media (max-width: 767px) {
+  .site-header,
+  .main-nav {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 
-.rating-form button {
-  align-self: flex-start;
-}
-
-.rating-form button:disabled {
-  opacity: 0.55;
-  cursor: not-allowed;
-}
-
-.rating-login-message {
-  margin: 8px 0 0;
-  color: #5d756b;
-  font-size: 0.9rem;
+  .main-nav {
+    gap: 12px;
+  }
 }

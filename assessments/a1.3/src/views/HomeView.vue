@@ -8,13 +8,8 @@ import AuthPanel from '../components/AuthPanel.vue'
 <template>
   <main>
     <HomeIntro />
-
-    <p>Basic Application Development: Version 2</p>
-
     <ServiceFinder />
-
-    <ReportForm id="report" />
-
+    <ReportForm />
     <AuthPanel />
   </main>
 </template>

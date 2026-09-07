@@ -3,34 +3,29 @@ import { computed, ref, watch } from 'vue'
 import ServiceCard from './ServiceCard.vue'
 import services from '../data/services.json'
 
-const searchTerm = ref(localStorage.getItem('serviceSearch') || '')
-const selectedCategory = ref('All')
+const search = ref(
+  localStorage.getItem('serviceSearch') || ''
+)
 
-watch(searchTerm, (newSearchTerm) => {
-  localStorage.setItem('serviceSearch', newSearchTerm)
-})
+const category = ref('')
 
 const categories = [
-  'All',
-  ...new Set(services.map((service) => service.category))
+  ...new Set(services.map(service => service.category))
 ]
 
+watch(search, value => {
+  localStorage.setItem('serviceSearch', value)
+})
+
 const filteredServices = computed(() => {
-  const term = searchTerm.value.toLowerCase().trim()
+  const term = search.value.trim().toLowerCase()
 
-  return services.filter((service) => {
-    const matchesSearch =
-      !term ||
-      service.name.toLowerCase().includes(term) ||
-      service.suburb.toLowerCase().includes(term) ||
-      service.category.toLowerCase().includes(term)
-
-    const matchesCategory =
-      selectedCategory.value === 'All' ||
-      service.category === selectedCategory.value
-
-    return matchesSearch && matchesCategory
-  })
+  return services.filter(service =>
+    (!category.value || service.category === category.value) &&
+    `${service.name} ${service.suburb} ${service.category}`
+      .toLowerCase()
+      .includes(term)
+  )
 })
 </script>
 
@@ -38,34 +33,41 @@ const filteredServices = computed(() => {
   <section id="services">
     <h2>Find a Service</h2>
 
-    <label for="service-search">Search services</label>
+    <label for="service-search">
+      Search services
+    </label>
 
     <input
       id="service-search"
-      v-model="searchTerm"
-      type="search"
+      v-model="search"
       placeholder="Search by name, suburb or category"
     >
 
-    <label for="category-filter">Filter by category</label>
+    <label for="service-category">
+      Filter by category
+    </label>
 
     <select
-      id="category-filter"
-      v-model="selectedCategory"
+      id="service-category"
+      v-model="category"
     >
+      <option value="">All</option>
+
       <option
-        v-for="category in categories"
-        :key="category"
-        :value="category"
+        v-for="item in categories"
+        :key="item"
+        :value="item"
       >
-        {{ category }}
+        {{ item }}
       </option>
     </select>
 
-    <p>{{ filteredServices.length }} service(s) found</p>
+    <p>
+      {{ filteredServices.length }} service(s) found
+    </p>
 
-    <p v-if="filteredServices.length === 0">
-      No services match your search. Try another suburb, category or service name.
+    <p v-if="!filteredServices.length">
+      No services match your search.
     </p>
 
     <div class="service-grid">

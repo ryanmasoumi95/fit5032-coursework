@@ -1,115 +1,60 @@
-import { ref } from 'vue'
+import { reactive } from 'vue'
 
-const RATINGS_KEY = 'circularMelbourneRatings'
+const KEY = 'circularMelbourneRatings'
 
-function loadRatings() {
-  const savedRatings = localStorage.getItem(RATINGS_KEY)
+const ratings = reactive(
+  JSON.parse(localStorage.getItem(KEY) || '[]')
+)
 
-  if (!savedRatings) {
-    return []
-  }
-
-  try {
-    const parsedRatings = JSON.parse(savedRatings)
-
-    return Array.isArray(parsedRatings)
-      ? parsedRatings
-      : []
-  } catch {
-    localStorage.removeItem(RATINGS_KEY)
-    return []
-  }
-}
-
-const ratings = ref(loadRatings())
-
-function saveRatings() {
-  localStorage.setItem(
-    RATINGS_KEY,
-    JSON.stringify(ratings.value)
-  )
-}
-
-function getServiceRatings(serviceId) {
-  return ratings.value.filter(
+function getRatings(serviceId, userId) {
+  const serviceRatings = ratings.filter(
     (rating) => rating.serviceId === serviceId
   )
-}
 
-// Calculate the aggregated average rating for this service across all users.
-function getAverageRating(serviceId) {
-  const serviceRatings = getServiceRatings(serviceId)
-
-  if (serviceRatings.length === 0) {
-    return 0
-  }
-
+  const count = serviceRatings.length
   const total = serviceRatings.reduce(
     (sum, rating) => sum + rating.rating,
     0
   )
 
-  return Number(
-    (total / serviceRatings.length).toFixed(1)
-  )
-}
-
-function getRatingCount(serviceId) {
-  return getServiceRatings(serviceId).length
-}
-
-function getUserRating(serviceId, userId) {
-  const existingRating = ratings.value.find(
-    (rating) =>
-      rating.serviceId === serviceId &&
-      rating.userId === userId
-  )
-
-  return existingRating?.rating ?? 0
-}
-
-// Keep one rating per user per service and update an existing rating instead of duplicating it.
-function submitRating(serviceId, userId, ratingValue) {
-  const numericRating = Number(ratingValue)
-
-  if (
-    !userId ||
-    !Number.isInteger(numericRating) ||
-    numericRating < 1 ||
-    numericRating > 5
-  ) {
-    return false
+  return {
+    average: count
+      ? Number((total / count).toFixed(1))
+      : 0,
+    count,
+    userRating:
+      serviceRatings.find(
+        (rating) => rating.userId === userId
+      )?.rating ?? 0
   }
+}
 
-  const existingIndex = ratings.value.findIndex(
-    (rating) =>
-      rating.serviceId === serviceId &&
-      rating.userId === userId
+function submitRating(serviceId, userId, rating) {
+  const existing = ratings.find(
+    (item) =>
+      item.serviceId === serviceId &&
+      item.userId === userId
   )
 
-  const ratingRecord = {
-    serviceId,
-    userId,
-    rating: numericRating
-  }
-
-  if (existingIndex >= 0) {
-    ratings.value[existingIndex] = ratingRecord
+  if (existing) {
+    existing.rating = rating
   } else {
-    ratings.value.push(ratingRecord)
+    ratings.push({
+      serviceId,
+      userId,
+      rating
+    })
   }
 
-  saveRatings()
-
-  return true
+  localStorage.setItem(
+    KEY,
+    JSON.stringify(ratings)
+  )
 }
 
 export function useRatings() {
   return {
-    ratings,
-    getAverageRating,
-    getRatingCount,
-    getUserRating,
+    getRatings,
     submitRating
   }
 }

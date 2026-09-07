@@ -10,56 +10,39 @@ const props = defineProps({
   }
 })
 
-const { currentUser, isAuthenticated } = useAuth()
-
-const {
-  getAverageRating,
-  getRatingCount,
-  getUserRating,
-  submitRating
-} = useRatings()
+const { currentUser } = useAuth()
+const { getRatings, submitRating } = useRatings()
 
 const selectedRating = ref(0)
-const ratingMessage = ref('')
+const saved = ref(false)
 
-const averageRating = computed(() =>
-  getAverageRating(props.serviceId)
-)
-
-const ratingCount = computed(() =>
-  getRatingCount(props.serviceId)
+const ratingInfo = computed(() =>
+  getRatings(
+    props.serviceId,
+    currentUser.value?.id
+  )
 )
 
 watch(
   () => currentUser.value?.id,
   (userId) => {
-    ratingMessage.value = ''
-
     selectedRating.value = userId
-      ? getUserRating(props.serviceId, userId)
+      ? ratingInfo.value.userRating
       : 0
+
+    saved.value = false
   },
-  {
-    immediate: true
-  }
+  { immediate: true }
 )
 
-function handleRatingSubmit() {
-  ratingMessage.value = ''
-
-  if (!currentUser.value) {
-    return
-  }
-
-  const success = submitRating(
+function saveRating() {
+  submitRating(
     props.serviceId,
     currentUser.value.id,
     selectedRating.value
   )
 
-  if (success) {
-    ratingMessage.value = 'Your rating has been saved.'
-  }
+  saved.value = true
 }
 </script>
 
@@ -67,22 +50,20 @@ function handleRatingSubmit() {
   <div class="rating-control">
     <div class="rating-summary">
       <strong>
-        {{ averageRating > 0 ? `${averageRating} / 5` : 'Not yet rated' }}
+        {{
+          ratingInfo.average
+            ? `${ratingInfo.average} / 5`
+            : 'Not yet rated'
+        }}
       </strong>
 
       <span>
-        {{
-          ratingCount === 1
-            ? '1 rating'
-            : `${ratingCount} ratings`
-        }}
+        {{ ratingInfo.count }}
+        rating{{ ratingInfo.count === 1 ? '' : 's' }}
       </span>
     </div>
 
-    <div
-      v-if="isAuthenticated"
-      class="rating-form"
-    >
+    <div v-if="currentUser" class="rating-form">
       <label :for="`rating-${serviceId}`">
         Your rating
       </label>
@@ -91,10 +72,7 @@ function handleRatingSubmit() {
         :id="`rating-${serviceId}`"
         v-model.number="selectedRating"
       >
-        <option :value="0">
-          Select a rating
-        </option>
-
+        <option :value="0">Select a rating</option>
         <option :value="1">1 - Poor</option>
         <option :value="2">2 - Fair</option>
         <option :value="3">3 - Good</option>
@@ -103,18 +81,17 @@ function handleRatingSubmit() {
       </select>
 
       <button
-        type="button"
-        :disabled="selectedRating === 0"
-        @click="handleRatingSubmit"
+        :disabled="!selectedRating"
+        @click="saveRating"
       >
         Save rating
       </button>
 
       <p
-        v-if="ratingMessage"
+        v-if="saved"
         class="form-success"
       >
-        {{ ratingMessage }}
+        Your rating has been saved.
       </p>
     </div>
 

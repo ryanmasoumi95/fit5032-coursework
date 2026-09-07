@@ -5,197 +5,139 @@ import { useAuth } from '../composables/useAuth'
 const {
   currentUser,
   authError,
-  isAuthenticated,
   register,
   login,
-  logout,
-  clearAuthError
+  logout
 } = useAuth()
 
-const mode = ref('login')
-
+const registering = ref(false)
 const name = ref('')
 const email = ref('')
 const password = ref('')
-
 const formError = ref('')
 
-function switchMode(newMode) {
-  mode.value = newMode
+function switchMode(value) {
+  registering.value = value
   formError.value = ''
-  clearAuthError()
+  authError.value = ''
 }
 
 function validateForm() {
-  formError.value = ''
-
-  if (mode.value === 'register' && !name.value.trim()) {
-    formError.value = 'Name is required.'
-    return false
+  if (registering.value && !name.value.trim()) {
+    return 'Name is required.'
   }
 
-  if (!email.value.trim()) {
-    formError.value = 'Email is required.'
-    return false
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+    return 'Please enter a valid email address.'
   }
 
   if (!password.value) {
-    formError.value = 'Password is required.'
-    return false
+    return 'Password is required.'
   }
 
   if (password.value.length < 8) {
-    formError.value = 'Password must be at least 8 characters.'
-    return false
+    return 'Password must be at least 8 characters.'
   }
 
-  return true
+  return ''
 }
 
 async function submitForm() {
-  if (!validateForm()) {
+  formError.value = validateForm()
+
+  if (formError.value) {
     return
   }
 
-  let success = false
-
-  if (mode.value === 'register') {
-    success = await register(
-      name.value,
-      email.value,
-      password.value
-    )
-  } else {
-    success = await login(
-      email.value,
-      password.value
-    )
-  }
+  const success = registering.value
+    ? await register(name.value, email.value, password.value)
+    : await login(email.value, password.value)
 
   if (success) {
     name.value = ''
     email.value = ''
     password.value = ''
-    formError.value = ''
   }
-}
-
-function handleLogout() {
-  logout()
-
-  name.value = ''
-  email.value = ''
-  password.value = ''
-  formError.value = ''
 }
 </script>
 
 <template>
   <section id="account" class="auth-panel">
-    <div v-if="isAuthenticated">
+    <div v-if="currentUser">
       <h2>My Account</h2>
 
       <p>
-        Signed in as
-        <strong>{{ currentUser.name }}</strong>
+        Signed in as <strong>{{ currentUser.name }}</strong>
       </p>
 
       <p>{{ currentUser.email }}</p>
 
       <p>
-        Role:
-        <strong>{{ currentUser.role }}</strong>
+        Role: <strong>{{ currentUser.role }}</strong>
       </p>
 
-      <button
-        type="button"
-        @click="handleLogout"
-      >
+      <button @click="logout">
         Log out
       </button>
     </div>
 
     <div v-else>
       <h2>
-        {{ mode === 'login' ? 'Log in' : 'Create an account' }}
+        {{ registering ? 'Create an account' : 'Log in' }}
       </h2>
 
       <div class="auth-mode-buttons">
         <button
-          type="button"
-          :class="{ active: mode === 'login' }"
-          @click="switchMode('login')"
+          :class="{ active: !registering }"
+          @click="switchMode(false)"
         >
           Log in
         </button>
 
         <button
-          type="button"
-          :class="{ active: mode === 'register' }"
-          @click="switchMode('register')"
+          :class="{ active: registering }"
+          @click="switchMode(true)"
         >
           Register
         </button>
       </div>
 
-      <form
-        class="auth-form"
-        @submit.prevent="submitForm"
-        novalidate
-      >
-        <div v-if="mode === 'register'">
+      <form @submit.prevent="submitForm" novalidate>
+        <div v-if="registering">
           <label for="auth-name">Name</label>
-
           <input
             id="auth-name"
             v-model="name"
-            type="text"
-            autocomplete="name"
           >
         </div>
 
         <div>
           <label for="auth-email">Email</label>
-
           <input
             id="auth-email"
             v-model="email"
             type="email"
-            autocomplete="email"
           >
         </div>
 
         <div>
           <label for="auth-password">Password</label>
-
           <input
             id="auth-password"
             v-model="password"
             type="password"
-            :autocomplete="
-              mode === 'login'
-                ? 'current-password'
-                : 'new-password'
-            "
           >
         </div>
 
         <p
-          v-if="formError"
+          v-if="formError || authError"
           class="form-error"
         >
-          {{ formError }}
+          {{ formError || authError }}
         </p>
 
-        <p
-          v-if="authError"
-          class="form-error"
-        >
-          {{ authError }}
-        </p>
-
-        <button type="submit">
-          {{ mode === 'login' ? 'Log in' : 'Create account' }}
+        <button>
+          {{ registering ? 'Create account' : 'Log in' }}
         </button>
       </form>
     </div>

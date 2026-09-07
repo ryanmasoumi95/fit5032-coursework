@@ -1,10 +1,15 @@
 import { computed, ref } from 'vue'
 
-const currentUser = ref(null)
-const authError = ref('')
-
 const USERS_KEY = 'circularMelbourneUsers'
 const CURRENT_USER_KEY = 'circularMelbourneCurrentUser'
+
+const users = JSON.parse(localStorage.getItem(USERS_KEY) || '[]')
+
+const currentUser = ref(
+  JSON.parse(localStorage.getItem(CURRENT_USER_KEY) || 'null')
+)
+
+const authError = ref('')
 
 const DEMO_ADMIN = {
   id: 'admin-001',
@@ -15,135 +20,67 @@ const DEMO_ADMIN = {
   role: 'admin'
 }
 
-function getStoredUsers() {
-  const savedUsers = localStorage.getItem(USERS_KEY)
-
-  if (!savedUsers) {
-    return []
-  }
-
-  try {
-    const users = JSON.parse(savedUsers)
-    return Array.isArray(users) ? users : []
-  } catch {
-    localStorage.removeItem(USERS_KEY)
-    return []
-  }
-}
-
-function saveStoredUsers(users) {
+function saveUsers() {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
 }
 
-// Seed one admin account so role-based access can be demonstrated.
-function ensureDemoAdmin() {
-  const users = getStoredUsers()
+function saveSession({ id, name, email, role }) {
+  const session = { id, name, email, role }
 
-  const adminExists = users.some(
-    (user) => user.email.toLowerCase() === DEMO_ADMIN.email
-  )
-
-  if (!adminExists) {
-    users.push(DEMO_ADMIN)
-    saveStoredUsers(users)
-  }
+  currentUser.value = session
+  localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(session))
 }
 
-// Hash passwords before storing them in this client-side prototype.
 async function hashPassword(password) {
-  const encodedPassword = new TextEncoder().encode(password)
-
-  const hashBuffer = await crypto.subtle.digest(
+  const hash = await crypto.subtle.digest(
     'SHA-256',
-    encodedPassword
+    new TextEncoder().encode(password)
   )
 
-  return Array.from(new Uint8Array(hashBuffer))
+  return [...new Uint8Array(hash)]
     .map((byte) => byte.toString(16).padStart(2, '0'))
     .join('')
 }
 
-// Store only the active user session without including the password hash.
-function createSessionUser(user) {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    role: user.role
-  }
+if (!users.some((user) => user.email === DEMO_ADMIN.email)) {
+  users.push(DEMO_ADMIN)
+  saveUsers()
 }
 
-function saveCurrentUser(user) {
-  const sessionUser = createSessionUser(user)
-
-  currentUser.value = sessionUser
-
-  localStorage.setItem(
-    CURRENT_USER_KEY,
-    JSON.stringify(sessionUser)
-  )
-}
-
-function restoreSession() {
-  const savedUser = localStorage.getItem(CURRENT_USER_KEY)
-
-  if (!savedUser) {
-    return
-  }
-
-  try {
-    currentUser.value = JSON.parse(savedUser)
-  } catch {
-    localStorage.removeItem(CURRENT_USER_KEY)
-  }
-}
-
-// Register multiple users while preventing duplicate email accounts.
 async function register(name, email, password) {
   authError.value = ''
+  email = email.trim().toLowerCase()
 
-  const cleanName = name.trim()
-  const cleanEmail = email.trim().toLowerCase()
-
-  const users = getStoredUsers()
-
-  const accountExists = users.some(
-    (user) => user.email.toLowerCase() === cleanEmail
-  )
-
-  if (accountExists) {
+  if (users.some((user) => user.email === email)) {
     authError.value = 'An account with this email already exists.'
     return false
   }
 
-  const passwordHash = await hashPassword(password)
-
-  const newUser = {
+  const user = {
     id: crypto.randomUUID(),
-    name: cleanName,
-    email: cleanEmail,
-    passwordHash,
+    name: name.trim(),
+    email,
+    passwordHash: await hashPassword(password),
     role: 'user'
   }
 
-  users.push(newUser)
-
-  saveStoredUsers(users)
-  saveCurrentUser(newUser)
+  users.push(user)
+  saveUsers()
+  saveSession(user)
 
   return true
 }
 
-// Authenticate by comparing the submitted password hash with the stored hash.
 async function login(email, password) {
   authError.value = ''
+  email = email.trim().toLowerCase()
 
-  const cleanEmail = email.trim().toLowerCase()
-  const users = getStoredUsers()
+  const passwordHash = await hashPassword(password)
 
   const user = users.find(
-    (storedUser) =>
-      storedUser.email.toLowerCase() === cleanEmail
+    (user) =>
+      user.email === email &&
+      user.passwordHash === passwordHash
   )
 
   if (!user) {
@@ -151,49 +88,26 @@ async function login(email, password) {
     return false
   }
 
-  const passwordHash = await hashPassword(password)
-
-  if (passwordHash !== user.passwordHash) {
-    authError.value = 'Invalid email or password.'
-    return false
-  }
-
-  saveCurrentUser(user)
-
+  saveSession(user)
   return true
 }
 
 function logout() {
   currentUser.value = null
-  authError.value = ''
-
   localStorage.removeItem(CURRENT_USER_KEY)
 }
-
-function clearAuthError() {
-  authError.value = ''
-}
-
-const isAuthenticated = computed(
-  () => currentUser.value !== null
-)
 
 const isAdmin = computed(
   () => currentUser.value?.role === 'admin'
 )
 
-ensureDemoAdmin()
-restoreSession()
-
 export function useAuth() {
   return {
     currentUser,
     authError,
-    isAuthenticated,
     isAdmin,
     register,
     login,
-    logout,
-    clearAuthError
+    logout
   }
 }

@@ -1,44 +1,45 @@
-# rmasoumi-library
+# Circular Melbourne: FIT5032 A1.3
 
-This template should help get you started developing with Vue 3 in Vite.
+This folder contains my work for FIT5032 Assessment 1.3: Basic Application Development Version 2.
 
-## Recommended IDE Setup
+Circular Melbourne is a Vue 3 web application that helps users find recycling, reuse and repair services around Melbourne. This version builds on the earlier application by adding user accounts, administrator access, service ratings and basic security checks.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Main features
 
-## Recommended Browser Setup
+* Search and filter services loaded from JSON data.
+* Responsive layouts for mobile, tablet and desktop screens.
+* A report form with required field, description length and email validation.
+* Registration, login and logout with saved user sessions.
+* User and admin roles, with the Admin Dashboard restricted to administrators.
+* Service ratings with an average score calculated from ratings submitted by different users.
+* Basic XSS protection by rejecting markup in plain text report fields.
+* Local Storage for saved accounts, sessions, ratings and service searches.
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Running the project
 
-## Customize configuration
+Open a terminal in this folder and run:
 
-See [Vite Configuration Reference](https://vite.dev/config/).
-
-## Project Setup
-
-```sh
+```bash
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-### Compile and Minify for Production
+Then open `http://localhost:5173/` in your browser.
 
-```sh
-npm run build
-```
+## Project structure
 
-### Lint with [ESLint](https://eslint.org/)
+The main application code is inside the `src` folder.
 
-```sh
-npm run lint
-```
+`components` contains the reusable interface components.
+
+`composables` contains the authentication and rating logic.
+
+`data` contains the service information used by the service finder.
+
+`router` contains the Home and Admin routes and the admin access check.
+
+`utils` contains the unsafe markup check used by the report form.
+
+`views` contains the Home and Admin page views.
+
+This version is a client side university prototype, so account and rating data is stored locally in the browser rather than in a backend database.

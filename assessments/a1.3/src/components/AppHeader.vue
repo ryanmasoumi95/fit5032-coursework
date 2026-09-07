@@ -5,18 +5,13 @@ import { useAuth } from '../composables/useAuth'
 const router = useRouter()
 const { isAdmin } = useAuth()
 
-async function goToSection(sectionId) {
+async function goToSection(id) {
   await router.push({ name: 'home' })
 
   requestAnimationFrame(() => {
-    const section = document.getElementById(sectionId)
-
-    if (section) {
-      section.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      })
-    }
+    document.getElementById(id)?.scrollIntoView({
+      behavior: 'smooth'
+    })
   })
 }
 </script>
@@ -54,10 +49,9 @@ async function goToSection(sectionId) {
         Report Information
       </a>
 
-      <!-- Only administrators can see the dashboard navigation link. -->
       <RouterLink
         v-if="isAdmin"
-        :to="{ name: 'admin' }"
+        to="/admin"
       >
         Admin Dashboard
       </RouterLink>
