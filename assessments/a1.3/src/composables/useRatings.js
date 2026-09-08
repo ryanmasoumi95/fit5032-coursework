@@ -6,6 +6,7 @@ const ratings = reactive(
   JSON.parse(localStorage.getItem(KEY) || '[]')
 )
 
+// Calculate the average, count and current user's rating for one service.
 function getRatings(serviceId, userId) {
   const serviceRatings = ratings.filter(
     (rating) => rating.serviceId === serviceId
@@ -30,6 +31,7 @@ function getRatings(serviceId, userId) {
 }
 
 function submitRating(serviceId, userId, rating) {
+  // Update an existing rating so each user has only one rating per service.
   const existing = ratings.find(
     (item) =>
       item.serviceId === serviceId &&

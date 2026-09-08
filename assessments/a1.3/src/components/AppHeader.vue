@@ -7,7 +7,8 @@ const { isAdmin } = useAuth()
 
 async function goToSection(id) {
   await router.push({ name: 'home' })
-
+  
+  // Wait for the Home view to render before scrolling to its section.
   requestAnimationFrame(() => {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth'

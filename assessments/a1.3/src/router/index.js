@@ -26,6 +26,7 @@ const router = createRouter({
   ]
 })
 
+// Redirect non-admin users away from the administrator page.
 router.beforeEach((to) => {
   if (to.name === 'admin' && !isAdmin.value) {
     return { name: 'home' }

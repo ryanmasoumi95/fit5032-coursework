@@ -13,6 +13,7 @@ const categories = [
   ...new Set(services.map(service => service.category))
 ]
 
+// Keep the user's service search after the page is refreshed.
 watch(search, value => {
   localStorage.setItem('serviceSearch', value)
 })

@@ -20,9 +20,10 @@ function submitForm() {
 
   errors.value = {}
   success.value = false
-
+  
+  // Plain text fields reject HTML-style markup to reduce XSS risk.
   if (!form.serviceName) {
-    errors.value.serviceName = 'Service name is required.'
+    errors.value.serviceName = 'Service name is required.'  
   } else if (containsUnsafeMarkup(form.serviceName)) {
     errors.value.serviceName = markupError
   }

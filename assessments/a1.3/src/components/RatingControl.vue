@@ -23,6 +23,7 @@ const ratingInfo = computed(() =>
   )
 )
 
+// Load the correct saved rating whenever the signed-in user changes.
 watch(
   () => currentUser.value?.id,
   (userId) => {

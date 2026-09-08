@@ -11,6 +11,7 @@ const currentUser = ref(
 
 const authError = ref('')
 
+// The demo admin is stored like a normal account so role-based access can be tested.
 const DEMO_ADMIN = {
   id: 'admin-001',
   name: 'Circular Melbourne Admin',
@@ -24,6 +25,7 @@ function saveUsers() {
   localStorage.setItem(USERS_KEY, JSON.stringify(users))
 }
 
+// Store only the signed-in user's basic details, not their password hash.
 function saveSession({ id, name, email, role }) {
   const session = { id, name, email, role }
 
@@ -31,6 +33,7 @@ function saveSession({ id, name, email, role }) {
   localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(session))
 }
 
+// Hash passwords before saving them in this client-side prototype.
 async function hashPassword(password) {
   const hash = await crypto.subtle.digest(
     'SHA-256',
