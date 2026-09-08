@@ -1,25 +1,47 @@
-# Circular Melbourne: FIT5032 A1.2
+# Circular Melbourne: FIT5032 A1.3
 
-This folder contains my work for FIT5032 Assessment 1.2: Basic Application Development (Version 1).
+This folder contains my work for FIT5032 Assessment 1.3: Basic Application Development Version 2.
 
-At this stage, I have set up the basic Vue 3 project and confirmed that it runs correctly using Vite.
+Circular Melbourne is a Vue 3 web application that helps users find recycling, reuse and repair services around Melbourne. This version builds on the earlier application by adding user accounts, administrator access, service ratings and basic security checks.
 
-## Current progress
+## Main features
 
-So far, the project includes:
-
-- Vue 3 setup
-- Vite setup
-- a basic `App.vue`
-- `main.js`
-- the initial Circular Melbourne page
-
-More features will be added gradually as I work through the A1.2 requirements.
+* Search and filter services loaded from JSON data.
+* Responsive layouts for mobile, tablet and desktop screens.
+* A report form with required field, description length and email validation.
+* Registration, login and logout with saved user sessions.
+* User and admin roles, with the Admin Dashboard restricted to administrators.
+* Service ratings with an average score calculated from ratings submitted by different users.
+* Basic XSS protection by rejecting markup in plain text report fields.
+* Local Storage for saved accounts, sessions, ratings and service searches.
 
 ## Running the project
 
-From this folder, run:
+Open a terminal in this folder and run:
 
 ```bash
 npm install
 npm run dev
+```
+
+Then open `http://localhost:5173/` in your browser.
+
+## Project structure
+
+The main application code is inside the `src` folder.
+
+`components` contains the reusable interface components.
+
+`composables` contains the authentication and rating logic.
+
+`data` contains the service information used by the service finder.
+
+`router` contains the Home and Admin routes and the admin access check.
+
+`utils` contains the unsafe markup check used by the report form.
+
+`views` contains the Home and Admin page views.
+
+## Prototype note
+
+This application is a client side university prototype. User accounts, sessions and ratings are stored in Local Storage. Passwords are hashed before being stored, but a production application would use secure server side authentication and storage.
