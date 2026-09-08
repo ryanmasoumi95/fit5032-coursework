@@ -42,4 +42,6 @@ The main application code is inside the `src` folder.
 
 `views` contains the Home and Admin page views.
 
-This version is a client side university prototype, so account and rating data is stored locally in the browser rather than in a backend database.
+## Prototype note
+
+This application is a client side university prototype. User accounts, sessions and ratings are stored in Local Storage. Passwords are hashed before being stored, but a production application would use secure server side authentication and storage.
