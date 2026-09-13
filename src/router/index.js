@@ -5,6 +5,7 @@ import AboutView from '../views/AboutView.vue'
 import LoginView from '../views/LoginView.vue'
 import AccessDeniedView from '../views/AccessDeniedView.vue'
 import AddBookView from '../views/AddBookView.vue'
+import GetBookCountView from '../views/GetBookCountView.vue'
 
 import { isAuthenticated } from '../auth'
 
@@ -36,6 +37,11 @@ const routes = [
     path: '/addbook',
     name: 'AddBook',
     component: AddBookView
+  },
+  {
+    path: '/getbookcount',
+    name: 'GetBookCount',
+    component: GetBookCountView
   }
 ]
 
