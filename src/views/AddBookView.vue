@@ -92,8 +92,9 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
+import axios from 'axios'
+
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
@@ -120,12 +121,16 @@ const loadBooks = async () => {
 
 const addBook = async () => {
   try {
-    await addDoc(collection(db, 'books'), {
-      isbn: Number(isbn.value),
-      name: name.value
-    })
+    const response = await axios.post(
+      'http://127.0.0.1:5001/fit5032-a09e2/us-central1/addCapitalizedBook',
+      {
+        isbn: Number(isbn.value),
+        name: name.value
+      }
+    )
 
-    message.value = 'Book added successfully!'
+    message.value =
+      `Book added through Cloud Function: ${response.data.name}`
 
     isbn.value = null
     name.value = ''
@@ -133,6 +138,7 @@ const addBook = async () => {
     await loadBooks()
   } catch (error) {
     console.error('Error adding book:', error)
+
     message.value = ''
   }
 }
