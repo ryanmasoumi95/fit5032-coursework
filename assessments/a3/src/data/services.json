@@ -40,5 +40,61 @@
     "suburb": "St Kilda",
     "category": "Food waste",
     "description": "Community collection point for household food scraps and compostable waste."
+  },
+  {
+    "id": 7,
+    "name": "Preston Repair Workshop",
+    "suburb": "Preston",
+    "category": "Repair",
+    "description": "Repair support for small appliances, bicycles and household items."
+  },
+  {
+    "id": 8,
+    "name": "Fitzroy Clothing Exchange",
+    "suburb": "Fitzroy",
+    "category": "Clothing",
+    "description": "Community clothing reuse and textile collection service."
+  },
+  {
+    "id": 9,
+    "name": "Southbank Electronics Drop-Off",
+    "suburb": "Southbank",
+    "category": "E-waste",
+    "description": "Drop-off location for computers, cables and household electronics."
+  },
+  {
+    "id": 10,
+    "name": "Carlton Community Compost Hub",
+    "suburb": "Carlton",
+    "category": "Food waste",
+    "description": "Local compost collection point for household organic waste."
+  },
+  {
+    "id": 11,
+    "name": "Northcote Furniture Reuse",
+    "suburb": "Northcote",
+    "category": "Reuse",
+    "description": "Accepts reusable furniture and selected household goods."
+  },
+  {
+    "id": 12,
+    "name": "Hawthorn Repair Station",
+    "suburb": "Hawthorn",
+    "category": "Repair",
+    "description": "Community repair station for household items and small electronics."
+  },
+  {
+    "id": 13,
+    "name": "Prahran Textile Collection",
+    "suburb": "Prahran",
+    "category": "Clothing",
+    "description": "Collection service for reusable clothing and unwanted textiles."
+  },
+  {
+    "id": 14,
+    "name": "Box Hill Battery Recycling",
+    "suburb": "Box Hill",
+    "category": "E-waste",
+    "description": "Household battery and small electronic recycling collection point."
   }
 ]

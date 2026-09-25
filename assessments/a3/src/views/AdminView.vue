@@ -1,21 +1,79 @@
+<script setup>
+import InteractiveTable from '../components/InteractiveTable.vue'
+import reports from '../data/reports.json'
+import services from '../data/services.json'
+
+const serviceColumns = [
+  {
+    key: 'id',
+    label: 'ID'
+  },
+  {
+    key: 'name',
+    label: 'Service name'
+  },
+  {
+    key: 'suburb',
+    label: 'Suburb'
+  },
+  {
+    key: 'category',
+    label: 'Category'
+  },
+  {
+    key: 'description',
+    label: 'Description'
+  }
+]
+
+const reportColumns = [
+  {
+    key: 'id',
+    label: 'ID'
+  },
+  {
+    key: 'serviceName',
+    label: 'Service name'
+  },
+  {
+    key: 'issueType',
+    label: 'Issue type'
+  },
+  {
+    key: 'reporterEmail',
+    label: 'Reporter email'
+  },
+  {
+    key: 'status',
+    label: 'Status'
+  },
+  {
+    key: 'submittedAt',
+    label: 'Submitted'
+  }
+]
+</script>
+
 <template>
   <main>
     <h2>Admin Dashboard</h2>
 
     <p>
-      This page is restricted to administrators.
+      Review Circular Melbourne service and report data.
     </p>
 
-    <ul>
-      <li>
-        <strong>Service management:</strong>
-        Review and maintain community service information.
-      </li>
+    <InteractiveTable
+      :rows="services"
+      :columns="serviceColumns"
+      caption="Services"
+      empty-message="No services match your search."
+    />
 
-      <li>
-        <strong>Report management:</strong>
-        Review incorrect-information reports from users.
-      </li>
-    </ul>
+    <InteractiveTable
+      :rows="reports"
+      :columns="reportColumns"
+      caption="Incorrect Information Reports"
+      empty-message="No reports match your search."
+    />
   </main>
 </template>
