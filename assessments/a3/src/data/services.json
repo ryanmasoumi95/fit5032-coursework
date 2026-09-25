@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "name": "Dandenong E-Waste Hub",
+    "suburb": "Dandenong",
+    "category": "E-waste",
+    "description": "Drop-off point for household e-waste and small electrical items."
+  },
+  {
+    "id": 2,
+    "name": "Community Repair Centre",
+    "suburb": "Footscray",
+    "category": "Repair",
+    "description": "Community repair support for common household items and small furniture."
+  },
+  {
+    "id": 3,
+    "name": "Richmond Textile Hub",
+    "suburb": "Richmond",
+    "category": "Clothing",
+    "description": "Collection point for wearable and end-of-life clothing."
+  },
+  {
+    "id": 4,
+    "name": "Coburg Battery Point",
+    "suburb": "Coburg",
+    "category": "E-waste",
+    "description": "Battery recycling point for common household batteries."
+  },
+  {
+    "id": 5,
+    "name": "Brunswick Reuse Centre",
+    "suburb": "Brunswick",
+    "category": "Reuse",
+    "description": "Accepts reusable household goods and furniture for community redistribution."
+  },
+  {
+    "id": 6,
+    "name": "St Kilda Food Waste Hub",
+    "suburb": "St Kilda",
+    "category": "Food waste",
+    "description": "Community collection point for household food scraps and compostable waste."
+  }
+]
