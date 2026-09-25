@@ -7,7 +7,7 @@ import HomeView from '../views/HomeView.vue'
 import AdminView from '../views/AdminView.vue'
 import { useAuth } from '../composables/useAuth'
 
-const { isAdmin } = useAuth()
+const { isAdmin, waitForAuth } = useAuth()
 
 const router = createRouter({
   history: createWebHashHistory(),
@@ -26,8 +26,10 @@ const router = createRouter({
   ]
 })
 
-// Redirect non-admin users away from the administrator page.
-router.beforeEach((to) => {
+// Wait for Firebase to restore the user's session before checking whether they can access the administrator page.
+router.beforeEach(async (to) => {
+  await waitForAuth()
+
   if (to.name === 'admin' && !isAdmin.value) {
     return { name: 'home' }
   }
