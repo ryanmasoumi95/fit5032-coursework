@@ -1,4 +1,5 @@
 <script setup>
+import AdminAnalytics from '../components/AdminAnalytics.vue'
 import InteractiveTable from '../components/InteractiveTable.vue'
 import reports from '../data/reports.json'
 import services from '../data/services.json'
@@ -64,6 +65,11 @@ const reportColumns = [
     <p>
       Review Circular Melbourne service and report data.
     </p>
+
+    <AdminAnalytics
+      :services="services"
+      :reports="reports"
+    />
 
     <InteractiveTable
       :rows="services"

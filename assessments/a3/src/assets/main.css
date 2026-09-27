@@ -216,6 +216,33 @@ textarea {
   font-size: 1.35rem;
 }
 
+.table-heading-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.interactive-table .table-heading-row h3 {
+  margin: 0;
+}
+
+.table-export-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.table-export-actions button {
+  margin: 0;
+}
+
+.interactive-table > .form-success {
+  margin: -4px 0 18px;
+}
+
 .table-global-search {
   display: grid;
   gap: 8px;
@@ -347,6 +374,14 @@ textarea {
 
   .interactive-table {
     padding: 16px;
+  }
+
+  .table-heading-row {
+    align-items: flex-start;
+  }
+
+  .table-export-actions {
+    width: 100%;
   }
 
   .table-footer {
