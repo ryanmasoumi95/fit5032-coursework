@@ -88,14 +88,18 @@ async function submitForm() {
 
       <div class="auth-mode-buttons">
         <button
+          type="button"
           :class="{ active: !registering }"
+          :aria-pressed="!registering"
           @click="switchMode(false)"
         >
           Log in
         </button>
 
         <button
+          type="button"
           :class="{ active: registering }"
+          :aria-pressed="registering"
           @click="switchMode(true)"
         >
           Register
@@ -132,6 +136,7 @@ async function submitForm() {
         <p
           v-if="formError || authError"
           class="form-error"
+          role="alert"
         >
           {{ formError || authError }}
         </p>

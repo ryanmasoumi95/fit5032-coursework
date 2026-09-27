@@ -198,9 +198,17 @@ async function submitForm() {
           id="service-name"
           v-model="form.serviceName"
           maxlength="80"
+          required
+          :aria-invalid="Boolean(errors.serviceName)"
+          :aria-describedby="
+            errors.serviceName
+              ? 'service-name-error'
+              : undefined
+          "
         >
         <p
           v-if="errors.serviceName"
+          id="service-name-error"
           class="form-error"
           role="alert"
         >
@@ -213,6 +221,13 @@ async function submitForm() {
         <select
           id="issue-type"
           v-model="form.issueType"
+          required
+          :aria-invalid="Boolean(errors.issueType)"
+          :aria-describedby="
+            errors.issueType
+              ? 'issue-type-error'
+              : undefined
+          "
         >
           <option value="">Select an issue</option>
           <option value="address">Incorrect address</option>
@@ -221,6 +236,7 @@ async function submitForm() {
         </select>
         <p
           v-if="errors.issueType"
+          id="issue-type-error"
           class="form-error"
           role="alert"
         >
@@ -233,10 +249,19 @@ async function submitForm() {
         <textarea
           id="description"
           v-model="form.description"
+          minlength="20"
           maxlength="500"
+          required
+          :aria-invalid="Boolean(errors.description)"
+          :aria-describedby="
+            errors.description
+              ? 'description-error'
+              : undefined
+          "
         ></textarea>
         <p
           v-if="errors.description"
+          id="description-error"
           class="form-error"
           role="alert"
         >
@@ -251,9 +276,17 @@ async function submitForm() {
           v-model="form.email"
           type="email"
           maxlength="120"
+          required
+          :aria-invalid="Boolean(errors.email)"
+          :aria-describedby="
+            errors.email
+              ? 'email-error'
+              : undefined
+          "
         >
         <p
           v-if="errors.email"
+          id="email-error"
           class="form-error"
           role="alert"
         >
@@ -270,6 +303,12 @@ async function submitForm() {
           ref="fileInput"
           type="file"
           accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+          :aria-invalid="Boolean(errors.attachment)"
+          :aria-describedby="
+            errors.attachment
+              ? 'attachment-error'
+              : undefined
+          "
           @change="handleAttachment"
         >
         <p v-if="attachmentName">
@@ -277,6 +316,7 @@ async function submitForm() {
         </p>
         <p
           v-if="errors.attachment"
+          id="attachment-error"
           class="form-error"
           role="alert"
         >

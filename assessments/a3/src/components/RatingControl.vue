@@ -91,6 +91,7 @@ function saveRating() {
       <p
         v-if="saved"
         class="form-success"
+        role="status"
       >
         Your rating has been saved.
       </p>
