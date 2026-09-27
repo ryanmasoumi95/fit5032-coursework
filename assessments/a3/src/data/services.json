@@ -4,97 +4,125 @@
     "name": "Dandenong E-Waste Hub",
     "suburb": "Dandenong",
     "category": "E-waste",
-    "description": "Drop-off point for household e-waste and small electrical items."
+    "description": "Drop-off point for household e-waste and small electrical items.",
+    "latitude": -37.9875,
+    "longitude": 145.2148
   },
   {
     "id": 2,
     "name": "Community Repair Centre",
     "suburb": "Footscray",
     "category": "Repair",
-    "description": "Community repair support for common household items and small furniture."
+    "description": "Community repair support for common household items and small furniture.",
+    "latitude": -37.7996,
+    "longitude": 144.899
   },
   {
     "id": 3,
     "name": "Richmond Textile Hub",
     "suburb": "Richmond",
     "category": "Clothing",
-    "description": "Collection point for wearable and end-of-life clothing."
+    "description": "Collection point for wearable and end-of-life clothing.",
+    "latitude": -37.823,
+    "longitude": 144.998
   },
   {
     "id": 4,
     "name": "Coburg Battery Point",
     "suburb": "Coburg",
     "category": "E-waste",
-    "description": "Battery recycling point for common household batteries."
+    "description": "Battery recycling point for common household batteries.",
+    "latitude": -37.743,
+    "longitude": 144.9643
   },
   {
     "id": 5,
     "name": "Brunswick Reuse Centre",
     "suburb": "Brunswick",
     "category": "Reuse",
-    "description": "Accepts reusable household goods and furniture for community redistribution."
+    "description": "Accepts reusable household goods and furniture for community redistribution.",
+    "latitude": -37.7665,
+    "longitude": 144.9615
   },
   {
     "id": 6,
     "name": "St Kilda Food Waste Hub",
     "suburb": "St Kilda",
     "category": "Food waste",
-    "description": "Community collection point for household food scraps and compostable waste."
+    "description": "Community collection point for household food scraps and compostable waste.",
+    "latitude": -37.8676,
+    "longitude": 144.9788
   },
   {
     "id": 7,
     "name": "Preston Repair Workshop",
     "suburb": "Preston",
     "category": "Repair",
-    "description": "Repair support for small appliances, bicycles and household items."
+    "description": "Repair support for small appliances, bicycles and household items.",
+    "latitude": -37.7387,
+    "longitude": 145.0005
   },
   {
     "id": 8,
     "name": "Fitzroy Clothing Exchange",
     "suburb": "Fitzroy",
     "category": "Clothing",
-    "description": "Community clothing reuse and textile collection service."
+    "description": "Community clothing reuse and textile collection service.",
+    "latitude": -37.7984,
+    "longitude": 144.9783
   },
   {
     "id": 9,
     "name": "Southbank Electronics Drop-Off",
     "suburb": "Southbank",
     "category": "E-waste",
-    "description": "Drop-off location for computers, cables and household electronics."
+    "description": "Drop-off location for computers, cables and household electronics.",
+    "latitude": -37.8233,
+    "longitude": 144.9646
   },
   {
     "id": 10,
     "name": "Carlton Community Compost Hub",
     "suburb": "Carlton",
     "category": "Food waste",
-    "description": "Local compost collection point for household organic waste."
+    "description": "Local compost collection point for household organic waste.",
+    "latitude": -37.8001,
+    "longitude": 144.9671
   },
   {
     "id": 11,
     "name": "Northcote Furniture Reuse",
     "suburb": "Northcote",
     "category": "Reuse",
-    "description": "Accepts reusable furniture and selected household goods."
+    "description": "Accepts reusable furniture and selected household goods.",
+    "latitude": -37.771,
+    "longitude": 145.0005
   },
   {
     "id": 12,
     "name": "Hawthorn Repair Station",
     "suburb": "Hawthorn",
     "category": "Repair",
-    "description": "Community repair station for household items and small electronics."
+    "description": "Community repair station for household items and small electronics.",
+    "latitude": -37.8221,
+    "longitude": 145.035
   },
   {
     "id": 13,
     "name": "Prahran Textile Collection",
     "suburb": "Prahran",
     "category": "Clothing",
-    "description": "Collection service for reusable clothing and unwanted textiles."
+    "description": "Collection service for reusable clothing and unwanted textiles.",
+    "latitude": -37.8518,
+    "longitude": 144.9934
   },
   {
     "id": 14,
     "name": "Box Hill Battery Recycling",
     "suburb": "Box Hill",
     "category": "E-waste",
-    "description": "Household battery and small electronic recycling collection point."
+    "description": "Household battery and small electronic recycling collection point.",
+    "latitude": -37.8199,
+    "longitude": 145.1217
   }
 ]
