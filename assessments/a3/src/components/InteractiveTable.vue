@@ -27,6 +27,8 @@ const columnFilters = reactive({})
 const sortKey = ref('')
 const sortDirection = ref('asc')
 const currentPage = ref(1)
+const exportMessage = ref('')
+const exportingPdf = ref(false)
 
 function textValue(value) {
   if (value === null || value === undefined) {
@@ -151,6 +153,7 @@ watch(
   [globalSearch, columnFilters],
   () => {
     currentPage.value = 1
+    exportMessage.value = ''
   },
   {
     deep: true
@@ -179,6 +182,7 @@ function sortBy(column) {
   }
 
   currentPage.value = 1
+  exportMessage.value = ''
 }
 
 function ariaSort(column) {
@@ -220,11 +224,183 @@ function goToNextPage() {
 function goToLastPage() {
   currentPage.value = pageCount.value
 }
+
+function exportFileName(extension) {
+  const baseName = props.caption
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
+
+  return `${baseName || 'export'}.${extension}`
+}
+
+function csvValue(value) {
+  const text = textValue(value)
+    .replaceAll('"', '""')
+
+  return `"${text}"`
+}
+
+function exportCsv() {
+  if (!sortedRows.value.length) {
+    return
+  }
+
+  const header = props.columns
+    .map(column => csvValue(column.label))
+    .join(',')
+
+  const body = sortedRows.value
+    .map(row =>
+      props.columns
+        .map(column => csvValue(row[column.key]))
+        .join(',')
+    )
+    .join('\r\n')
+
+  const csv = `\uFEFF${header}\r\n${body}`
+
+  const blob = new Blob(
+    [csv],
+    {
+      type: 'text/csv;charset=utf-8;'
+    }
+  )
+
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+
+  link.href = url
+  link.download = exportFileName('csv')
+
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+
+  URL.revokeObjectURL(url)
+
+  exportMessage.value =
+    `Exported ${sortedRows.value.length} matching row(s) as CSV.`
+}
+
+async function exportPdf() {
+  if (
+    !sortedRows.value.length ||
+    exportingPdf.value
+  ) {
+    return
+  }
+
+  exportingPdf.value = true
+  exportMessage.value = 'Preparing PDF export...'
+
+  try {
+    const [
+      { jsPDF },
+      { autoTable }
+    ] = await Promise.all([
+      import('jspdf'),
+      import('jspdf-autotable')
+    ])
+
+    const pdfDocument = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4'
+    })
+
+    pdfDocument.setFontSize(16)
+    pdfDocument.text(props.caption, 14, 15)
+
+    pdfDocument.setFontSize(10)
+    pdfDocument.text(
+      `${sortedRows.value.length} matching row(s) exported`,
+      14,
+      22
+    )
+
+    autoTable(pdfDocument, {
+      startY: 28,
+      head: [
+        props.columns.map(column => column.label)
+      ],
+      body: sortedRows.value.map(row =>
+        props.columns.map(column =>
+          textValue(row[column.key])
+        )
+      ),
+      styles: {
+        fontSize: 8,
+        cellPadding: 2
+      },
+      headStyles: {
+        fontStyle: 'bold'
+      },
+      margin: {
+        left: 10,
+        right: 10
+      }
+    })
+
+    pdfDocument.save(
+      exportFileName('pdf')
+    )
+
+    exportMessage.value =
+      `Exported ${sortedRows.value.length} matching row(s) as PDF.`
+  } catch (error) {
+    console.error('PDF export failed:', error)
+
+    exportMessage.value =
+      'Unable to export the table as PDF.'
+  } finally {
+    exportingPdf.value = false
+  }
+}
 </script>
 
 <template>
   <section class="interactive-table">
-    <h3>{{ caption }}</h3>
+    <div class="table-heading-row">
+      <h3>{{ caption }}</h3>
+
+      <div
+        class="table-export-actions"
+        aria-label="Table export options"
+      >
+        <button
+          type="button"
+          :disabled="!sortedRows.length"
+          @click="exportCsv"
+        >
+          Export CSV
+        </button>
+
+        <button
+          type="button"
+          :disabled="
+            !sortedRows.length ||
+            exportingPdf
+          "
+          @click="exportPdf"
+        >
+          {{
+            exportingPdf
+              ? 'Preparing PDF...'
+              : 'Export PDF'
+          }}
+        </button>
+      </div>
+    </div>
+
+    <p
+      v-if="exportMessage"
+      class="form-success"
+      role="status"
+    >
+      {{ exportMessage }}
+    </p>
 
     <label class="table-global-search">
       <span>Search all columns</span>
