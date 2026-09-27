@@ -16,6 +16,25 @@ textarea {
   font: inherit;
 }
 
+.skip-link {
+  position: fixed;
+  top: -100px;
+  left: 16px;
+  z-index: 2000;
+  padding: 10px 16px;
+  border-radius: 6px;
+  background: #173f32;
+  color: white;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip-link:focus {
+  top: 16px;
+  outline: 3px solid white;
+  outline-offset: 2px;
+}
+
 .site-header,
 .brand,
 .main-nav,

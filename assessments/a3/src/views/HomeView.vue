@@ -7,7 +7,10 @@ import AuthPanel from '../components/AuthPanel.vue'
 </script>
 
 <template>
-  <main>
+  <main
+    id="main-content"
+    tabindex="-1"
+  >
     <HomeIntro />
     <ServiceFinder />
     <ServiceMap />

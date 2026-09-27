@@ -55,7 +55,10 @@ const reportColumns = [
 </script>
 
 <template>
-  <main>
+  <main
+    id="main-content"
+    tabindex="-1"
+  >
     <h2>Admin Dashboard</h2>
 
     <p>
