@@ -76,3 +76,24 @@ exports.addCapitalizedBook = onRequest((request, response) => {
     }
   });
 });
+
+exports.getAllBooks = onRequest((request, response) => {
+  cors(request, response, async () => {
+    try {
+      const booksSnapshot = await db.collection("books").get();
+
+      const books = booksSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+
+      response.status(200).json(books);
+    } catch (error) {
+      console.error("Error getting all books:", error);
+
+      response.status(500).json({
+        error: "Unable to get all books"
+      });
+    }
+  });
+});
