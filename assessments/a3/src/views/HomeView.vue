@@ -5,7 +5,6 @@ import ServiceComparison from '../components/ServiceComparison.vue'
 import RecyclingGuide from '../components/RecyclingGuide.vue'
 import ServiceMap from '../components/ServiceMap.vue'
 import ReportForm from '../components/ReportForm.vue'
-import AuthPanel from '../components/AuthPanel.vue'
 </script>
 
 <template>
@@ -19,6 +18,5 @@ import AuthPanel from '../components/AuthPanel.vue'
     <RecyclingGuide />
     <ServiceMap />
     <ReportForm />
-    <AuthPanel />
   </main>
 </template>

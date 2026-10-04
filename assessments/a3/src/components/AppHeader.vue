@@ -3,12 +3,15 @@ import { useRouter } from 'vue-router'
 import { useAuth } from '../composables/useAuth'
 
 const router = useRouter()
-const { isAdmin } = useAuth()
+
+const {
+  currentUser,
+  isAdmin
+} = useAuth()
 
 async function goToSection(id) {
   await router.push({ name: 'home' })
-  
-  // Wait for the Home view to render before scrolling to its section.
+
   requestAnimationFrame(() => {
     document.getElementById(id)?.scrollIntoView({
       behavior: 'smooth'
@@ -20,15 +23,25 @@ async function goToSection(id) {
 <template>
   <header class="site-header">
     <div class="brand">
-      <div class="brand-mark">CM</div>
+      <div class="brand-mark">
+        CM
+      </div>
 
       <div>
-        <h1 class="brand-name">Circular Melbourne</h1>
-        <p class="brand-tagline">Reuse more. Waste less.</p>
+        <h1 class="brand-name">
+          Circular Melbourne
+        </h1>
+
+        <p class="brand-tagline">
+          Reuse more. Waste less.
+        </p>
       </div>
     </div>
 
-    <nav class="main-nav" aria-label="Main navigation">
+    <nav
+      class="main-nav"
+      aria-label="Main navigation"
+    >
       <a
         href="#home"
         @click.prevent="goToSection('home')"
@@ -49,6 +62,14 @@ async function goToSection(id) {
       >
         Report Information
       </a>
+
+      <RouterLink to="/account">
+        {{
+          currentUser
+            ? 'My Account'
+            : 'Log in / Register'
+        }}
+      </RouterLink>
 
       <RouterLink
         v-if="isAdmin"

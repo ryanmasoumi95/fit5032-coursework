@@ -14,20 +14,30 @@ const registering = ref(false)
 const name = ref('')
 const email = ref('')
 const password = ref('')
+const confirmPassword = ref('')
 const formError = ref('')
 
 function switchMode(value) {
   registering.value = value
   formError.value = ''
   authError.value = ''
+  password.value = ''
+  confirmPassword.value = ''
 }
 
 function validateForm() {
-  if (registering.value && !name.value.trim()) {
+  if (
+    registering.value &&
+    !name.value.trim()
+  ) {
     return 'Name is required.'
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+  if (
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+      email.value.trim()
+    )
+  ) {
     return 'Please enter a valid email address.'
   }
 
@@ -37,6 +47,20 @@ function validateForm() {
 
   if (password.value.length < 8) {
     return 'Password must be at least 8 characters.'
+  }
+
+  if (
+    registering.value &&
+    !confirmPassword.value
+  ) {
+    return 'Please confirm your password.'
+  }
+
+  if (
+    registering.value &&
+    password.value !== confirmPassword.value
+  ) {
+    return 'Passwords do not match.'
   }
 
   return ''
@@ -50,41 +74,74 @@ async function submitForm() {
   }
 
   const success = registering.value
-    ? await register(name.value, email.value, password.value)
-    : await login(email.value, password.value)
+    ? await register(
+        name.value,
+        email.value,
+        password.value
+      )
+    : await login(
+        email.value,
+        password.value
+      )
 
   if (success) {
     name.value = ''
     email.value = ''
     password.value = ''
+    confirmPassword.value = ''
   }
 }
 </script>
 
 <template>
-  <section id="account" class="auth-panel">
+  <section
+    id="account"
+    class="auth-panel"
+    aria-labelledby="account-heading"
+  >
     <div v-if="currentUser">
-      <h2>My Account</h2>
+      <h2 id="account-heading">
+        My Account
+      </h2>
 
       <p>
-        Signed in as <strong>{{ currentUser.name }}</strong>
+        Signed in as
+        <strong>{{ currentUser.name }}</strong>
       </p>
-
-      <p>{{ currentUser.email }}</p>
 
       <p>
-        Role: <strong>{{ currentUser.role }}</strong>
+        {{ currentUser.email }}
       </p>
 
-      <button @click="logout">
+      <p>
+        Role:
+        <strong>{{ currentUser.role }}</strong>
+      </p>
+
+      <button
+        type="button"
+        @click="logout"
+      >
         Log out
       </button>
     </div>
 
     <div v-else>
-      <h2>
-        {{ registering ? 'Create an account' : 'Log in' }}
+      <h2 id="account-heading">
+        {{
+          registering
+            ? 'Create an account'
+            : 'Log in'
+        }}
       </h2>
+
+      <p>
+        {{
+          registering
+            ? 'Create your Circular Melbourne account.'
+            : 'Log in to access your account features.'
+        }}
+      </p>
 
       <div class="auth-mode-buttons">
         <button
@@ -106,30 +163,69 @@ async function submitForm() {
         </button>
       </div>
 
-      <form @submit.prevent="submitForm" novalidate>
+      <form
+        @submit.prevent="submitForm"
+        novalidate
+      >
         <div v-if="registering">
-          <label for="auth-name">Name</label>
+          <label for="auth-name">
+            Name
+          </label>
+
           <input
             id="auth-name"
             v-model="name"
+            type="text"
+            autocomplete="name"
+            required
           >
         </div>
 
         <div>
-          <label for="auth-email">Email</label>
+          <label for="auth-email">
+            Email
+          </label>
+
           <input
             id="auth-email"
             v-model="email"
             type="email"
+            autocomplete="email"
+            required
           >
         </div>
 
         <div>
-          <label for="auth-password">Password</label>
+          <label for="auth-password">
+            Password
+          </label>
+
           <input
             id="auth-password"
             v-model="password"
             type="password"
+            :autocomplete="
+              registering
+                ? 'new-password'
+                : 'current-password'
+            "
+            minlength="8"
+            required
+          >
+        </div>
+
+        <div v-if="registering">
+          <label for="auth-confirm-password">
+            Confirm password
+          </label>
+
+          <input
+            id="auth-confirm-password"
+            v-model="confirmPassword"
+            type="password"
+            autocomplete="new-password"
+            minlength="8"
+            required
           >
         </div>
 
@@ -141,8 +237,12 @@ async function submitForm() {
           {{ formError || authError }}
         </p>
 
-        <button>
-          {{ registering ? 'Create account' : 'Log in' }}
+        <button type="submit">
+          {{
+            registering
+              ? 'Create account'
+              : 'Log in'
+          }}
         </button>
       </form>
     </div>

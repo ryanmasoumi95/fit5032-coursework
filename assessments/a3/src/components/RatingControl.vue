@@ -10,8 +10,15 @@ const props = defineProps({
   }
 })
 
-const { currentUser } = useAuth()
-const { getRatings, submitRating } = useRatings()
+const {
+  currentUser,
+  isAdmin
+} = useAuth()
+
+const {
+  getRatings,
+  submitRating
+} = useRatings()
 
 const selectedRating = ref(0)
 const saved = ref(false)
@@ -23,13 +30,19 @@ const ratingInfo = computed(() =>
   )
 )
 
-// Load the correct saved rating whenever the signed-in user changes.
+const showRatingSummary = computed(
+  () =>
+    !isAdmin.value ||
+    ratingInfo.value.count > 0
+)
+
 watch(
   () => currentUser.value?.id,
   (userId) => {
-    selectedRating.value = userId
-      ? ratingInfo.value.userRating
-      : 0
+    selectedRating.value =
+      userId && !isAdmin.value
+        ? ratingInfo.value.userRating
+        : 0
 
     saved.value = false
   },
@@ -37,6 +50,14 @@ watch(
 )
 
 function saveRating() {
+  if (
+    !currentUser.value ||
+    isAdmin.value ||
+    !selectedRating.value
+  ) {
+    return
+  }
+
   submitRating(
     props.serviceId,
     currentUser.value.id,
@@ -49,7 +70,10 @@ function saveRating() {
 
 <template>
   <div class="rating-control">
-    <div class="rating-summary">
+    <div
+      v-if="showRatingSummary"
+      class="rating-summary"
+    >
       <strong>
         {{
           ratingInfo.average
@@ -64,7 +88,10 @@ function saveRating() {
       </span>
     </div>
 
-    <div v-if="currentUser" class="rating-form">
+    <div
+      v-if="currentUser && !isAdmin"
+      class="rating-form"
+    >
       <label :for="`rating-${serviceId}`">
         Your rating
       </label>
@@ -73,15 +100,33 @@ function saveRating() {
         :id="`rating-${serviceId}`"
         v-model.number="selectedRating"
       >
-        <option :value="0">Select a rating</option>
-        <option :value="1">1 - Poor</option>
-        <option :value="2">2 - Fair</option>
-        <option :value="3">3 - Good</option>
-        <option :value="4">4 - Very good</option>
-        <option :value="5">5 - Excellent</option>
+        <option :value="0">
+          Select a rating
+        </option>
+
+        <option :value="1">
+          1 - Poor
+        </option>
+
+        <option :value="2">
+          2 - Fair
+        </option>
+
+        <option :value="3">
+          3 - Good
+        </option>
+
+        <option :value="4">
+          4 - Very good
+        </option>
+
+        <option :value="5">
+          5 - Excellent
+        </option>
       </select>
 
       <button
+        type="button"
         :disabled="!selectedRating"
         @click="saveRating"
       >
@@ -96,6 +141,13 @@ function saveRating() {
         Your rating has been saved.
       </p>
     </div>
+
+    <p
+      v-else-if="currentUser && isAdmin"
+      class="rating-login-message"
+    >
+      Administrators cannot submit service ratings.
+    </p>
 
     <p
       v-else
