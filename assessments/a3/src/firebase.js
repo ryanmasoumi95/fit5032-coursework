@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth'
 import { getFirestore } from 'firebase/firestore'
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyCUduoC0gu05JA84wuXIgyCv1Z5jCM0HU8',
-  authDomain: 'circular-melbourne-a3-25152548.firebaseapp.com',
-  projectId: 'circular-melbourne-a3-25152548',
-  storageBucket: 'circular-melbourne-a3-25152548.firebasestorage.app',
-  messagingSenderId: '50539120100',
-  appId: '1:50539120100:web:8d171fed6c6609ca8ef3f1'
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID
 }
 
 const app = initializeApp(firebaseConfig)
