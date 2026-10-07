@@ -1,0 +1,42 @@
+name: A3 Continuous Integration
+
+on:
+  push:
+    branches:
+      - a3
+    paths:
+      - 'assessments/a3/**'
+      - '.github/workflows/a3-ci.yml'
+
+  pull_request:
+    branches:
+      - a3
+    paths:
+      - 'assessments/a3/**'
+      - '.github/workflows/a3-ci.yml'
+
+jobs:
+  build:
+    name: Build Circular Melbourne
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: assessments/a3
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.19.0'
+          cache: npm
+          cache-dependency-path: assessments/a3/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
