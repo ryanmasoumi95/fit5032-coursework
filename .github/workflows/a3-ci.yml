@@ -16,8 +16,8 @@ on:
       - '.github/workflows/a3-ci.yml'
 
 jobs:
-  build:
-    name: Build Circular Melbourne
+  test-and-build:
+    name: Test and Build Circular Melbourne
     runs-on: ubuntu-latest
 
     defaults:
@@ -37,6 +37,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Run automated tests
+        run: npm test
 
       - name: Build application
         run: npm run build
