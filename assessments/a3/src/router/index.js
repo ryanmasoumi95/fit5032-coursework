@@ -1,3 +1,4 @@
+
 import {
   createRouter,
   createWebHashHistory
@@ -6,6 +7,8 @@ import {
 import HomeView from '../views/HomeView.vue'
 import AuthView from '../views/AuthView.vue'
 import AdminView from '../views/AdminView.vue'
+import ServicesView from '../views/ServicesView.vue'
+import ReportView from '../views/ReportView.vue'
 import { useAuth } from '../composables/useAuth'
 
 const {
@@ -22,6 +25,16 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView
+    },
+    {
+      path: '/services',
+      name: 'services',
+      component: ServicesView
+    },
+    {
+      path: '/report',
+      name: 'report',
+      component: ReportView
     },
     {
       path: '/account',

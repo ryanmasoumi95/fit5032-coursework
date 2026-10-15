@@ -1,23 +1,11 @@
-<script setup>
-import { useRouter } from 'vue-router'
-import { useAuth } from '../composables/useAuth'
 
-const router = useRouter()
+<script setup>
+import { useAuth } from '../composables/useAuth'
 
 const {
   currentUser,
   isAdmin
 } = useAuth()
-
-async function goToSection(id) {
-  await router.push({ name: 'home' })
-
-  requestAnimationFrame(() => {
-    document.getElementById(id)?.scrollIntoView({
-      behavior: 'smooth'
-    })
-  })
-}
 </script>
 
 <template>
@@ -42,26 +30,17 @@ async function goToSection(id) {
       class="main-nav"
       aria-label="Main navigation"
     >
-      <a
-        href="#home"
-        @click.prevent="goToSection('home')"
-      >
+      <RouterLink to="/">
         Home
-      </a>
+      </RouterLink>
 
-      <a
-        href="#services"
-        @click.prevent="goToSection('services')"
-      >
+      <RouterLink to="/services">
         Find a Service
-      </a>
+      </RouterLink>
 
-      <a
-        href="#report"
-        @click.prevent="goToSection('report')"
-      >
+      <RouterLink to="/report">
         Report Information
-      </a>
+      </RouterLink>
 
       <RouterLink to="/account">
         {{
