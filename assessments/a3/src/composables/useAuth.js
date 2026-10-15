@@ -1,8 +1,11 @@
+
 import { computed, ref } from 'vue'
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut,
   updateProfile
 } from 'firebase/auth'
@@ -16,6 +19,8 @@ import { auth, db } from '../firebase'
 const currentUser = ref(null)
 const authError = ref('')
 const authReady = ref(false)
+
+const googleProvider = new GoogleAuthProvider()
 
 async function loadUserProfile(firebaseUser) {
   const profileRef = doc(db, 'users', firebaseUser.uid)
@@ -71,6 +76,18 @@ function setAuthError(error) {
   } else if (error.code === 'auth/too-many-requests') {
     authError.value =
       'Too many login attempts. Please try again later.'
+  } else if (error.code === 'auth/popup-closed-by-user') {
+    authError.value =
+      'Google sign-in was cancelled.'
+  } else if (error.code === 'auth/popup-blocked') {
+    authError.value =
+      'Please allow pop-ups to sign in with Google.'
+  } else if (
+    error.code ===
+    'auth/account-exists-with-different-credential'
+  ) {
+    authError.value =
+      'An account already exists with this email. Please use your original sign-in method.'
   } else {
     authError.value =
       'Authentication failed. Please try again.'
@@ -138,6 +155,43 @@ async function login(email, password) {
   }
 }
 
+async function loginWithGoogle() {
+  authError.value = ''
+
+  try {
+    const credential = await signInWithPopup(
+      auth,
+      googleProvider
+    )
+
+    const firebaseUser = credential.user
+    const profileRef = doc(db, 'users', firebaseUser.uid)
+    const profileSnapshot = await getDoc(profileRef)
+
+    // Only create a profile for new users.
+    // Existing user/admin roles are preserved.
+    if (!profileSnapshot.exists()) {
+      const profile = {
+        name:
+          firebaseUser.displayName ||
+          firebaseUser.email?.split('@')[0] ||
+          'User',
+        email: firebaseUser.email,
+        role: 'user'
+      }
+
+      await setDoc(profileRef, profile)
+    }
+
+    await loadUserProfile(firebaseUser)
+
+    return true
+  } catch (error) {
+    setAuthError(error)
+    return false
+  }
+}
+
 async function logout() {
   authError.value = ''
 
@@ -145,7 +199,8 @@ async function logout() {
     await signOut(auth)
     currentUser.value = null
   } catch {
-    authError.value = 'Unable to log out. Please try again.'
+    authError.value =
+      'Unable to log out. Please try again.'
   }
 }
 
@@ -166,6 +221,7 @@ export function useAuth() {
     isAdmin,
     register,
     login,
+    loginWithGoogle,
     logout,
     waitForAuth
   }

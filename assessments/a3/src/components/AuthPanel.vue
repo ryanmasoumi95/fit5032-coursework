@@ -1,3 +1,4 @@
+
 <script setup>
 import { ref } from 'vue'
 import { useAuth } from '../composables/useAuth'
@@ -7,6 +8,7 @@ const {
   authError,
   register,
   login,
+  loginWithGoogle,
   logout
 } = useAuth()
 
@@ -16,6 +18,7 @@ const email = ref('')
 const password = ref('')
 const confirmPassword = ref('')
 const formError = ref('')
+const googleSigningIn = ref(false)
 
 function switchMode(value) {
   registering.value = value
@@ -66,6 +69,13 @@ function validateForm() {
   return ''
 }
 
+function clearForm() {
+  name.value = ''
+  email.value = ''
+  password.value = ''
+  confirmPassword.value = ''
+}
+
 async function submitForm() {
   formError.value = validateForm()
 
@@ -85,10 +95,22 @@ async function submitForm() {
       )
 
   if (success) {
-    name.value = ''
-    email.value = ''
-    password.value = ''
-    confirmPassword.value = ''
+    clearForm()
+  }
+}
+
+async function submitGoogleLogin() {
+  formError.value = ''
+  googleSigningIn.value = true
+
+  try {
+    const success = await loginWithGoogle()
+
+    if (success) {
+      clearForm()
+    }
+  } finally {
+    googleSigningIn.value = false
   }
 }
 </script>
@@ -237,7 +259,10 @@ async function submitForm() {
           {{ formError || authError }}
         </p>
 
-        <button type="submit">
+        <button
+          type="submit"
+          :disabled="googleSigningIn"
+        >
           {{
             registering
               ? 'Create account'
@@ -245,6 +270,24 @@ async function submitForm() {
           }}
         </button>
       </form>
+
+      <div
+        style="margin-top: 24px;"
+      >
+        <p>Or continue with</p>
+
+        <button
+          type="button"
+          :disabled="googleSigningIn"
+          @click="submitGoogleLogin"
+        >
+          {{
+            googleSigningIn
+              ? 'Connecting to Google...'
+              : 'Continue with Google'
+          }}
+        </button>
+      </div>
     </div>
   </section>
 </template>
