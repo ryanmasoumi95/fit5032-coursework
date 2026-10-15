@@ -1,3 +1,6 @@
+
+import sanitizeHtml from "sanitize-html";
+
 const ISSUE_LABELS = {
   address: "Incorrect address",
   hours: "Incorrect opening hours",
@@ -11,6 +14,23 @@ const ALLOWED_ATTACHMENT_TYPES = new Set([
 ]);
 
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+const MAX_DESCRIPTION_HTML_LENGTH = 15000;
+
+const ALLOWED_DESCRIPTION_TAGS = [
+  "p",
+  "br",
+  "strong",
+  "b",
+  "em",
+  "i",
+  "u",
+  "ul",
+  "ol",
+  "li",
+  "h2",
+  "h3",
+  "blockquote",
+];
 
 function jsonResponse(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -55,6 +75,81 @@ function validateEmail(value) {
   }
 
   return email;
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function decodeBasicHtmlEntities(value) {
+  return value
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#(?:39|x27);/gi, "'")
+    .replace(/&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&amp;/gi, "&");
+}
+
+function richTextToPlainText(html) {
+  const textWithLineBreaks = html
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<li>/gi, "\n- ")
+    .replace(
+      /<\/(?:p|h2|h3|li|blockquote)>/gi,
+      "\n",
+    )
+    .replace(/<[^>]*>/g, "");
+
+  return decodeBasicHtmlEntities(textWithLineBreaks)
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+function validateRichTextDescription(value) {
+  if (typeof value !== "string") {
+    throw new Error("Description is required.");
+  }
+
+  const originalHtml = value.trim();
+
+  if (originalHtml.length > MAX_DESCRIPTION_HTML_LENGTH) {
+    throw new Error(
+      "Description contains too much formatting.",
+    );
+  }
+
+  // Keep only the formatting supported by our report editor.
+  // All HTML attributes are removed, including event handlers.
+  const safeHtml = sanitizeHtml(originalHtml, {
+    allowedTags: ALLOWED_DESCRIPTION_TAGS,
+    allowedAttributes: {},
+  });
+
+  const plainText = richTextToPlainText(safeHtml);
+
+  // Validate the actual visible text, not the HTML tag length.
+  if (
+    plainText.length < 20 ||
+    plainText.length > 500
+  ) {
+    throw new Error(
+      "Description must contain between 20 and 500 characters.",
+    );
+  }
+
+  return {
+    html: safeHtml,
+    text: plainText,
+  };
 }
 
 function validateAttachment(attachment) {
@@ -189,11 +284,8 @@ export async function onRequestPost(context) {
       80,
     );
 
-    const description = validatePlainText(
+    const description = validateRichTextDescription(
       report.description,
-      "Description",
-      20,
-      500,
     );
 
     const email = validateEmail(report.email);
@@ -206,20 +298,38 @@ export async function onRequestPost(context) {
       report.attachment,
     );
 
+    const issueLabel = ISSUE_LABELS[report.issueType];
+    const accountEmail = firebaseUser.email || "Unknown";
+
     const emailRequest = {
       from: "Circular Melbourne <onboarding@resend.dev>",
       to: [env.REPORT_RECIPIENT],
       subject: `Service report: ${serviceName}`,
+
+      // Plain-text alternative for email clients that do not
+      // support formatted HTML messages.
       text: [
         "New Circular Melbourne service report",
         "",
         `Service: ${serviceName}`,
-        `Issue: ${ISSUE_LABELS[report.issueType]}`,
+        `Issue: ${issueLabel}`,
         `Reporter email: ${email}`,
-        `Authenticated account: ${firebaseUser.email || "Unknown"}`,
+        `Authenticated account: ${accountEmail}`,
         "",
         "Description:",
-        description,
+        description.text,
+      ].join("\n"),
+
+      // Only sanitised report HTML is inserted here.
+      // All other user-provided values are HTML-escaped.
+      html: [
+        "<h2>New Circular Melbourne service report</h2>",
+        `<p><strong>Service:</strong> ${escapeHtml(serviceName)}</p>`,
+        `<p><strong>Issue:</strong> ${escapeHtml(issueLabel)}</p>`,
+        `<p><strong>Reporter email:</strong> ${escapeHtml(email)}</p>`,
+        `<p><strong>Authenticated account:</strong> ${escapeHtml(accountEmail)}</p>`,
+        "<h3>Description:</h3>",
+        `<div>${description.html}</div>`,
       ].join("\n"),
     };
 

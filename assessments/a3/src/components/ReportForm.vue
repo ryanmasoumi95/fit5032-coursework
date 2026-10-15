@@ -1,9 +1,27 @@
+
 <script setup>
 import { reactive, ref } from 'vue'
+import Editor from '@tinymce/tinymce-vue'
 import { auth } from '../firebase'
 import { containsUnsafeMarkup } from '../utils/security'
 
+// Load TinyMCE locally from the installed npm package.
+import 'tinymce/tinymce'
+import 'tinymce/models/dom'
+import 'tinymce/themes/silver'
+import 'tinymce/icons/default'
+
+// TinyMCE editor appearance.
+import 'tinymce/skins/ui/oxide/skin.min.css'
+import 'tinymce/skins/ui/oxide/content.js'
+import 'tinymce/skins/content/default/content.js'
+
+// Free TinyMCE plugins for bullet and numbered lists.
+import 'tinymce/plugins/lists'
+import 'tinymce/plugins/advlist'
+
 const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024
+const MAX_DESCRIPTION_HTML_LENGTH = 15000
 
 const form = reactive({
   serviceName: '',
@@ -21,6 +39,52 @@ const attachmentName = ref('')
 const fileInput = ref(null)
 
 const markupError = 'HTML or script markup is not allowed.'
+
+const editorConfig = {
+  height: 300,
+  menubar: false,
+  license_key: 'gpl',
+
+  plugins: 'lists advlist',
+
+  toolbar:
+    'undo redo | blocks | bold italic underline | ' +
+    'bullist numlist | removeformat',
+
+  block_formats:
+    'Paragraph=p;Heading 2=h2;Heading 3=h3',
+
+  // The editor skin is included in the application bundle.
+  skin: false,
+  content_css: false,
+
+  content_style:
+    'body { font-family: Arial, sans-serif; ' +
+    'font-size: 14px; line-height: 1.6; }',
+
+  aria_label: 'Report description',
+
+  branding: false,
+  promotion: false
+}
+
+// Read the actual text typed in TinyMCE instead of
+// counting the HTML tags added by the editor.
+function getDescriptionText(html) {
+  const documentObject = new DOMParser().parseFromString(
+    html,
+    'text/html'
+  )
+
+  documentObject
+    .querySelectorAll('script, style, iframe, object, embed')
+    .forEach((element) => element.remove())
+
+  return (documentObject.body.textContent || '')
+    .replace(/\u00a0/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
 
 function handleAttachment(event) {
   errors.value.attachment = ''
@@ -40,6 +104,7 @@ function handleAttachment(event) {
   if (!allowedTypes.includes(file.type)) {
     errors.value.attachment =
       'Only PDF, JPG and PNG files are allowed.'
+
     event.target.value = ''
     return
   }
@@ -47,6 +112,7 @@ function handleAttachment(event) {
   if (file.size > MAX_ATTACHMENT_BYTES) {
     errors.value.attachment =
       'Attachment must be 5 MB or smaller.'
+
     event.target.value = ''
     return
   }
@@ -61,6 +127,7 @@ function fileToBase64(file) {
 
     reader.onload = () => {
       const result = String(reader.result || '')
+
       const base64 = result.includes(',')
         ? result.split(',')[1]
         : result
@@ -81,9 +148,16 @@ async function submitForm() {
   form.description = form.description.trim()
   form.email = form.email.trim().toLowerCase()
 
+  // Preserve any existing attachment validation error.
+  const attachmentError = errors.value.attachment
+
   errors.value = {}
   success.value = false
   submitError.value = ''
+
+  if (attachmentError) {
+    errors.value.attachment = attachmentError
+  }
 
   if (!form.serviceName) {
     errors.value.serviceName = 'Service name is required.'
@@ -92,14 +166,27 @@ async function submitForm() {
   }
 
   if (!['address', 'hours', 'service'].includes(form.issueType)) {
-    errors.value.issueType = 'Please select a valid issue type.'
+    errors.value.issueType =
+      'Please select a valid issue type.'
   }
 
-  if (containsUnsafeMarkup(form.description)) {
-    errors.value.description = markupError
-  } else if (form.description.length < 20) {
+  const descriptionText = getDescriptionText(
+    form.description
+  )
+
+  // TinyMCE stores formatting as HTML. Validate its
+  // visible text instead of rejecting all HTML.
+  if (
+    descriptionText.length < 20 ||
+    descriptionText.length > 500
+  ) {
     errors.value.description =
-      'Description must be at least 20 characters.'
+      'Description must contain between 20 and 500 characters.'
+  } else if (
+    form.description.length > MAX_DESCRIPTION_HTML_LENGTH
+  ) {
+    errors.value.description =
+      'Description contains too much formatting.'
   }
 
   if (!form.email) {
@@ -108,10 +195,9 @@ async function submitForm() {
     containsUnsafeMarkup(form.email) ||
     !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)
   ) {
-    errors.value.email = 'Please enter a valid email address.'
+    errors.value.email =
+      'Please enter a valid email address.'
   }
-
-  if (errors.value.attachment) return
 
   if (Object.keys(errors.value).length) return
 
@@ -147,7 +233,11 @@ async function submitForm() {
       body: JSON.stringify({
         serviceName: form.serviceName,
         issueType: form.issueType,
+
+        // Send the formatted HTML to the backend.
+        // The backend sanitises it before emailing.
         description: form.description,
+
         email: form.email,
         attachment: attachmentData
       })
@@ -194,6 +284,7 @@ async function submitForm() {
     <form @submit.prevent="submitForm" novalidate>
       <div>
         <label for="service-name">Service name</label>
+
         <input
           id="service-name"
           v-model="form.serviceName"
@@ -206,6 +297,7 @@ async function submitForm() {
               : undefined
           "
         >
+
         <p
           v-if="errors.serviceName"
           id="service-name-error"
@@ -218,6 +310,7 @@ async function submitForm() {
 
       <div>
         <label for="issue-type">Issue type</label>
+
         <select
           id="issue-type"
           v-model="form.issueType"
@@ -230,10 +323,17 @@ async function submitForm() {
           "
         >
           <option value="">Select an issue</option>
-          <option value="address">Incorrect address</option>
-          <option value="hours">Incorrect opening hours</option>
-          <option value="service">Service information</option>
+          <option value="address">
+            Incorrect address
+          </option>
+          <option value="hours">
+            Incorrect opening hours
+          </option>
+          <option value="service">
+            Service information
+          </option>
         </select>
+
         <p
           v-if="errors.issueType"
           id="issue-type-error"
@@ -246,19 +346,27 @@ async function submitForm() {
 
       <div>
         <label for="description">Description</label>
-        <textarea
+
+        <p id="description-help">
+          Describe what needs correcting (20–500 characters).
+          You can use headings, bold text, italic text,
+          and bullet points.
+        </p>
+
+        <Editor
           id="description"
           v-model="form.description"
-          minlength="20"
-          maxlength="500"
-          required
+          license-key="gpl"
+          :init="editorConfig"
+          :disabled="sending"
           :aria-invalid="Boolean(errors.description)"
           :aria-describedby="
             errors.description
-              ? 'description-error'
-              : undefined
+              ? 'description-help description-error'
+              : 'description-help'
           "
-        ></textarea>
+        />
+
         <p
           v-if="errors.description"
           id="description-error"
@@ -271,6 +379,7 @@ async function submitForm() {
 
       <div>
         <label for="email">Email</label>
+
         <input
           id="email"
           v-model="form.email"
@@ -284,6 +393,7 @@ async function submitForm() {
               : undefined
           "
         >
+
         <p
           v-if="errors.email"
           id="email-error"
@@ -298,6 +408,7 @@ async function submitForm() {
         <label for="attachment">
           Attachment (optional)
         </label>
+
         <input
           id="attachment"
           ref="fileInput"
@@ -311,9 +422,11 @@ async function submitForm() {
           "
           @change="handleAttachment"
         >
+
         <p v-if="attachmentName">
           Selected: {{ attachmentName }}
         </p>
+
         <p
           v-if="errors.attachment"
           id="attachment-error"
@@ -324,7 +437,7 @@ async function submitForm() {
         </p>
       </div>
 
-      <button :disabled="sending">
+      <button type="submit" :disabled="sending">
         {{ sending ? 'Sending report...' : 'Submit report' }}
       </button>
 
