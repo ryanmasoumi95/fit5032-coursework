@@ -1,8 +1,13 @@
+
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import services from '../data/services.json'
 
 const item = ref('')
+
+const cloudAdvice = ref(null)
+const cloudLoading = ref(false)
+const cloudError = ref('')
 
 const rules = [
   {
@@ -89,13 +94,25 @@ const rules = [
   }
 ]
 
+// Clear previous cloud results when the item changes.
+watch(item, () => {
+  cloudAdvice.value = null
+  cloudError.value = ''
+})
+
+// Preserve the existing instant recycling recommendations.
+// After a successful cloud request, use the cloud category.
 const recommendation = computed(() => {
-  const term = item.value
-    .trim()
-    .toLowerCase()
+  const term = item.value.trim().toLowerCase()
 
   if (!term) {
     return null
+  }
+
+  if (cloudAdvice.value) {
+    return cloudAdvice.value.category
+      ? { category: cloudAdvice.value.category }
+      : null
   }
 
   let bestMatch = null
@@ -152,6 +169,74 @@ const recommendationMessage = computed(() => {
     `${matchingServices.value.length} matching service(s) found.`
   )
 })
+
+// This calls the new E.1 Cloudflare Pages Function.
+async function requestCloudAdvice() {
+  const requestedItem = item.value.trim()
+
+  if (
+    requestedItem.length < 2 ||
+    requestedItem.length > 120
+  ) {
+    cloudError.value =
+      'Please enter an item description of 2–120 characters.'
+    return
+  }
+
+  cloudLoading.value = true
+  cloudError.value = ''
+  cloudAdvice.value = null
+
+  try {
+    const response = await fetch(
+      `/api/recycling-advice?item=${encodeURIComponent(requestedItem)}`,
+      {
+        method: 'GET',
+        headers: {
+          Accept: 'application/json'
+        }
+      }
+    )
+
+    const contentType =
+      response.headers.get('content-type') || ''
+
+    if (!contentType.includes('application/json')) {
+      throw new Error(
+        'The cloud advice service is not available here.'
+      )
+    }
+
+    const result = await response.json()
+
+    if (!response.ok) {
+      throw new Error(
+        result.error || 'Cloud advice could not be loaded.'
+      )
+    }
+
+    if (
+      !result ||
+      typeof result.advice !== 'string'
+    ) {
+      throw new Error('The cloud response is invalid.')
+    }
+
+    // Ignore old responses if the visitor has typed a new item.
+    if (item.value.trim() === requestedItem) {
+      cloudAdvice.value = result
+    }
+  } catch (error) {
+    if (item.value.trim() === requestedItem) {
+      cloudError.value =
+        'Cloud advice could not be loaded. ' +
+        'Local recommendations still work. ' +
+        'Please try again on the deployed website.'
+    }
+  } finally {
+    cloudLoading.value = false
+  }
+}
 </script>
 
 <template>
@@ -171,7 +256,10 @@ const recommendationMessage = computed(() => {
       category.
     </p>
 
-    <div class="recycling-guide-form">
+    <form
+      class="recycling-guide-form"
+      @submit.prevent="requestCloudAdvice"
+    >
       <label for="recycling-item">
         What do you want to recycle, repair or reuse?
       </label>
@@ -181,15 +269,65 @@ const recommendationMessage = computed(() => {
         v-model="item"
         type="search"
         placeholder="For example: old laptop or food scraps"
+        maxlength="120"
       >
-    </div>
 
+      <button
+        type="submit"
+        :disabled="cloudLoading || item.trim().length < 2"
+      >
+        {{
+          cloudLoading
+            ? 'Getting cloud advice...'
+            : 'Get Cloud Recycling Advice'
+        }}
+      </button>
+    </form>
+
+    <!-- Existing instant recommendation remains available. -->
     <p
       v-if="recommendationMessage"
       class="recycling-guide-result"
       aria-live="polite"
     >
       {{ recommendationMessage }}
+    </p>
+
+    <!-- New result returned by the Cloudflare Function. -->
+    <div
+      v-if="cloudAdvice"
+      class="recycling-guide-cloud"
+      role="status"
+      aria-live="polite"
+    >
+      <h3>Cloud Recycling Advice</h3>
+
+      <p>
+        <strong>Item:</strong>
+        {{ cloudAdvice.item }}
+      </p>
+
+      <p>
+        <strong>Category:</strong>
+        {{ cloudAdvice.category || 'No clear category found' }}
+      </p>
+
+      <p>
+        <strong>Advice:</strong>
+        {{ cloudAdvice.advice }}
+      </p>
+
+      <p class="recycling-guide-source">
+        Powered by a Cloudflare Pages Function
+      </p>
+    </div>
+
+    <p
+      v-if="cloudError"
+      class="form-error"
+      role="alert"
+    >
+      {{ cloudError }}
     </p>
 
     <div
@@ -250,12 +388,38 @@ const recommendationMessage = computed(() => {
   font-weight: 600;
 }
 
+.recycling-guide-form button {
+  justify-self: start;
+}
+
 .recycling-guide-result {
   margin: 18px 0 0;
   padding: 14px 16px;
   border-radius: 8px;
   background: #eaf4ef;
   font-weight: 600;
+}
+
+.recycling-guide-cloud {
+  margin-top: 18px;
+  padding: 18px;
+  border: 1px solid #c5ddce;
+  border-radius: 10px;
+  background: #f2faf5;
+}
+
+.recycling-guide-cloud h3 {
+  margin-top: 0;
+  color: #214b38;
+}
+
+.recycling-guide-cloud p {
+  margin: 10px 0;
+}
+
+.recycling-guide-source {
+  font-size: 0.85rem;
+  color: #52685a;
 }
 
 .recycling-guide-matches {
